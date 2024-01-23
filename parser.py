@@ -11,7 +11,7 @@ def parse_arguments():
 
     # run
     parser.add_argument("--run_type", type=str, default=None,
-                        help="Type of run to perform", choices=["tpe", "t", "tp", "te", "p", "pe", "e" ])
+                        help="Type of run to perform", choices=["tpe", "t", "tp", "te", "p", "pe", "e"])
 
     # network
     parser.add_argument("--backbone", type=str, default=None,
