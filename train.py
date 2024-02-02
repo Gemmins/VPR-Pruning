@@ -1,4 +1,4 @@
-
+import deep_visual_geo_localization_benchmark as gl
 
 # train should take all arguments necessary for training and return trained network
 # this is where custom methods to train networks can be used
