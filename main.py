@@ -13,12 +13,10 @@ from os.path import join
 # Should be able to do all three in one command for any specified network architecture
 # Able to do any combination of the three in order
 
-# would generally like to abstract? the process of training, pruning and evaluating
-# have some simple api that allows easy addition of methods for all three
-# providing they return correct types etc.
+# Should allow easy addition of custom training/pruning
+# Currently will only work with torch-prune style methods
 
 # Do I want to have the pruning method loop or should I loop within it?
-
 
 # TODO implement training
 # TODO implement pruning loop

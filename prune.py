@@ -22,21 +22,19 @@ from os.path import join
 # this naming is also assumed when loading a model
 # therefore if loading a model not trained by this program then will need to rename it
 
-# the method for pruning is given in args, should each have dummy method to allow for the addition of new methods
-
 
 def prune(run_path, pruning_method, max_sparsity, pruning_step, current_sparsity):
 
-    # TODO load model
+    # load model
     model_name = current_sparsity.split(".")[1] + ".pth"
     model_dir = join(run_path, current_sparsity, model_name)
 
     model = torch.load(model_dir)
 
-    imp = get_imp(pruning_method)
+    # get importance (this is effectively where the pruning method is chosen)
+    imp = get_importance(pruning_method)
 
-    # TODO make sure this ends up an int
-    iterative_steps = max_sparsity / pruning_step
+    iterative_steps = round(max_sparsity / pruning_step)
 
     example_inputs = torch.randn(1, 3, 224, 224)
 
@@ -54,6 +52,7 @@ def prune(run_path, pruning_method, max_sparsity, pruning_step, current_sparsity
     for i in range(iterative_steps):
         pruner.step()
 
+        # would be good to log/save this info somewhere
         macs, nparams = tp.utils.count_ops_and_params(model, example_inputs)
         print(model)
         print(model(example_inputs).shape)
@@ -67,15 +66,23 @@ def prune(run_path, pruning_method, max_sparsity, pruning_step, current_sparsity
         )
         print("=" * 16)
 
-        # TODO finetune (train) here, then save the model
+        # TODO finetune (train) here
 
 
 
-    return model
+        # this is kinda wacky, might change naming at some point
+        # also might not need to save if saving is done withing the training method
+        current_sparsity = int(current_sparsity)
+        current_sparsity += int(pruning_step)
+
+        model_dir = join(run_path, str(current_sparsity), str(current_sparsity).split(".")[1] + ".pth")
+
+        torch.save(model, model_dir)
 
 
-def get_imp(pruning_method):
+def get_importance(pruning_method):
 
+    # TODO add more pruning methods here
     match pruning_method:
         case "l1_norm":
             imp = tp.importance.MagnitudeImportance(p=1, normalizer="mean", group_reduction="first")
