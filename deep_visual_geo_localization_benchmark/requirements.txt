@@ -1,0 +1,14 @@
+numpy
+torchvision
+psutil
+faiss_cpu
+tqdm
+torch
+Pillow
+scikit_learn
+torchscan
+googledrivedownloader
+requests
+timm
+transformers
+einops

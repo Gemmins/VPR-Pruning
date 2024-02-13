@@ -17,6 +17,22 @@ from os.path import join
 # Currently will only work with torch-prune style methods
 
 # Do I want to have the pruning method loop or should I loop within it?
+# Currently, the looping is done within the pruning method, for torch-prune
+# methods this makes sense
+
+# Output of a full experiment should be something like this:
+# .
+# └── run_path
+#     ├── logging.txt
+#     ├── 0.0
+#     │   ├── 0.pth
+#     │   ├── eval
+#     │   └── 0_logging.txt
+#     ├── 0.1
+#     │   ├── 1.pth
+#     │   ├── eval
+#     │   └── 0_logging.txt
+#    etc
 
 # TODO implement training
 # TODO implement pruning loop
@@ -26,15 +42,15 @@ from os.path import join
 args = parser.parse_arguments()
 run_path = args.run_path
 
-# will train network and save it in run folder
+
 if 't' in args.run_type:
-    s = join("0.0", "0_best.pth")
+    s = join("0.0", "0.pth")
     save_path = join(run_path, s)
-    torch.save(train.train(args.backbone, args.aggregation, args.datasets_folder, args.dataset_name), save_path)
+    torch.save(train.train(args), save_path)
 
 # prune network, produce list of networks at different all levels of sparsity
 if 'p' in args.run_type:
-    prune.prune(run_path, args.pruning_method, args.max_sparsity, args.pruning_step, args.current_sparsity)
+    prune.prune(args)
 
 # evaluates all models within a directory
 if 'e' in args.run_type:

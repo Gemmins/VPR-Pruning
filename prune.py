@@ -1,6 +1,7 @@
 import torch_pruning as tp
 import torch
 from os.path import join
+import train
 
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
@@ -23,18 +24,20 @@ from os.path import join
 # therefore if loading a model not trained by this program then will need to rename it
 
 
-def prune(run_path, pruning_method, max_sparsity, pruning_step, current_sparsity):
+def prune(args):
 
     # load model
-    model_name = current_sparsity.split(".")[1] + ".pth"
-    model_dir = join(run_path, current_sparsity, model_name)
+    model_name = args.starting_sparsity.split(".")[1] + ".pth"
+    model_dir = join(args.run_path, args.starting_sparsity, model_name)
 
     model = torch.load(model_dir)
 
-    # get importance (this is effectively where the pruning method is chosen)
-    imp = get_importance(pruning_method)
+    current_sparsity = args.starting_sparsity
 
-    iterative_steps = round(max_sparsity / pruning_step)
+    # get importance (this is effectively where the pruning method is chosen)
+    imp = get_importance(args.pruning_method)
+
+    iterative_steps = round(args.max_sparsity / args.pruning_step)
 
     example_inputs = torch.randn(1, 3, 224, 224)
 
@@ -43,7 +46,7 @@ def prune(run_path, pruning_method, max_sparsity, pruning_step, current_sparsity
         example_inputs=example_inputs,
         importance=imp,
         iterative_steps=iterative_steps,
-        pruning_ratio=max_sparsity,
+        pruning_ratio=args.max_sparsity,
         global_pruning=True
     )
 
@@ -66,19 +69,17 @@ def prune(run_path, pruning_method, max_sparsity, pruning_step, current_sparsity
         )
         print("=" * 16)
 
-        # TODO finetune (train) here
-
-
-
-        # this is kinda wacky, might change naming at some point
-        # also might not need to save if saving is done withing the training method
         current_sparsity = int(current_sparsity)
-        current_sparsity += int(pruning_step)
+        current_sparsity += int(args.pruning_step)
 
-        model_dir = join(run_path, str(current_sparsity), str(current_sparsity).split(".")[1] + ".pth")
+        # obviously is dumb to save and reload but is simpler than doing anything else
+        save(current_sparsity, args, model)
 
-        torch.save(model, model_dir)
+        # finetune (train) here
+        model = train.train(args)
 
+        # save the fine-tuned model
+        save(current_sparsity, args, model)
 
 def get_importance(pruning_method):
 
@@ -92,3 +93,12 @@ def get_importance(pruning_method):
             imp = None
 
     return imp
+
+
+def save(current_sparsity, args, model):
+    # this is kinda wacky, might change naming at some point
+
+    model_dir = join(args.run_path, str(current_sparsity), str(current_sparsity).split(".")[1] + ".pth")
+    torch.save(model, model_dir)
+
+    args.resume = model_dir

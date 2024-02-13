@@ -6,10 +6,10 @@ import deep_visual_geo_localization_benchmark as gl
 # training for me is going to only be from the geo-localization benchmark
 # this means some stuff will probs be redundant if own training is implemented
 
-def train(backbone, aggregation, datasets_folder, dataset_name):
 
+def train(args):
 
+    model = gl.train.train(args)
 
-
-    return
+    return model
 
