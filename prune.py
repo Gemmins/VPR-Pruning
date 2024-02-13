@@ -1,7 +1,7 @@
 import torch_pruning as tp
 import torch
 from os.path import join
-import train
+import wrap_train
 
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
@@ -76,7 +76,7 @@ def prune(args):
         save(current_sparsity, args, model)
 
         # finetune (train) here
-        model = train.train(args)
+        model = train.wrap_train(args)
 
         # save the fine-tuned model
         save(current_sparsity, args, model)

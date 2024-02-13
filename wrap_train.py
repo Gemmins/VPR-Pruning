@@ -1,4 +1,4 @@
-import deep_visual_geo_localization_benchmark as gl
+from deep_visual_geo_localization_benchmark import train
 
 # train should take all arguments necessary for training and return trained network
 # this is where custom methods to train networks can be used
@@ -9,7 +9,7 @@ import deep_visual_geo_localization_benchmark as gl
 
 def wrap_train(args):
 
-    model = gl.train.train(args)
+    model = train.train(args)
 
     return model
 

@@ -1,5 +1,5 @@
 import parser
-import train
+import wrap_train
 import prune
 import evaluate
 import logging
@@ -46,7 +46,7 @@ run_path = args.run_path
 if 't' in args.run_type:
     s = join("0.0", "0.pth")
     save_path = join(run_path, s)
-    torch.save(train.wrap_train(args), save_path)
+    torch.save(wrap_train.wrap_train(args), save_path)
 
 # prune network, produce list of networks at different all levels of sparsity
 if 'p' in args.run_type:
