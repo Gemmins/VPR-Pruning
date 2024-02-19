@@ -88,13 +88,13 @@ def prune(args):
         base_macs, base_nparams = macs, nparams
 
         # obviously is dumb to save and reload but is simpler than doing anything else
-        save(sparsity, args, pruner.model)
+        save(sparsity, args, model)
 
         # finetune (train) here
         pruner.model = wrap_train.wrap_train(args)
 
         # save the fine-tuned model
-        save(sparsity, args, pruner.model)
+        save(sparsity, args, model)
 
 
 def get_importance(pruning_method):
