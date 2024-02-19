@@ -41,7 +41,7 @@ def parse_arguments():
                         help="The level of sparsity you want to go to")
     parser.add_argument("--pruning_step", type=float, default=None,
                         help="How much to prune each pass")
-    parser.add_argument("--starting_sparsity", type=float, default=0.0,
+    parser.add_argument("--sparsity", type=float, default=0.0,
                         help="If network is already partially pruned, provide sparsity")
 
     # Paths parameters

@@ -1,8 +1,10 @@
+import copy
 import os
 
 import torch_pruning as tp
 import torch
 from os.path import join
+import test
 import wrap_train
 from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
 # prune should take trained network + args and result in the
@@ -27,14 +29,14 @@ from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
 
 
 def prune(args):
-    starting_sparsity = str(args.starting_sparsity)
+    sparsity = str(args.sparsity)
     # load model
-    model_name = starting_sparsity.split(".")[1] + ".pth"
-    model_dir = join(args.run_path, starting_sparsity, model_name)
+    model_name = sparsity.split(".")[1] + ".pth"
+    model_dir = join(args.run_path, sparsity, model_name)
 
     model = torch.load(model_dir)
     model.zero_grad()
-    current_sparsity = args.starting_sparsity
+    sparsity = args.sparsity
 
     # get importance (this is effectively where the pruning method is chosen)
     imp = get_importance(args.pruning_method)
@@ -78,16 +80,21 @@ def prune(args):
         )
         print("=" * 16)
 
-        current_sparsity += args.pruning_step
+        sparsity += args.pruning_step
+
+        # this deals with floating point error, can increase if needed
+        sparsity = round(sparsity, 5)
+
+        base_macs, base_nparams = macs, nparams
 
         # obviously is dumb to save and reload but is simpler than doing anything else
-        save(current_sparsity, args, model)
+        save(sparsity, args, pruner.model)
 
         # finetune (train) here
-        model = wrap_train.wrap_train(args)
+        pruner.model = wrap_train.wrap_train(args)
 
         # save the fine-tuned model
-        save(current_sparsity, args, model)
+        save(sparsity, args, pruner.model)
 
 
 def get_importance(pruning_method):
@@ -104,10 +111,11 @@ def get_importance(pruning_method):
     return imp
 
 
-def save(current_sparsity, args, model):
+def save(sparsity, args, model):
     # this is kinda wacky, might change naming at some point
-    os.mkdir(join(args.run_path, str(current_sparsity)))
-    model_dir = join(args.run_path, str(current_sparsity), str(current_sparsity).split(".")[1] + ".pth")
+    if not os.path.isdir(join(args.run_path, str(sparsity))):
+        os.mkdir(join(args.run_path, str(sparsity)))
+    model_dir = join(args.run_path, str(sparsity), str(sparsity).split(".")[1] + ".pth")
     torch.save(model, model_dir)
 
     args.resume = model_dir
