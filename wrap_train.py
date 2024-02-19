@@ -9,7 +9,7 @@ import deep_visual_geo_localization_benchmark as gl
 
 def wrap_train(args):
 
-    model = gl.train.train(args)
+    model = gl.train(args)
 
     return model
 

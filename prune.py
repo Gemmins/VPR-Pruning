@@ -1,8 +1,10 @@
+import os
+
 import torch_pruning as tp
 import torch
 from os.path import join
 import wrap_train
-
+from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
 
@@ -25,13 +27,13 @@ import wrap_train
 
 
 def prune(args):
-
+    starting_sparsity = str(args.starting_sparsity)
     # load model
-    model_name = args.starting_sparsity.split(".")[1] + ".pth"
-    model_dir = join(args.run_path, args.starting_sparsity, model_name)
+    model_name = starting_sparsity.split(".")[1] + ".pth"
+    model_dir = join(args.run_path, starting_sparsity, model_name)
 
     model = torch.load(model_dir)
-
+    model.zero_grad()
     current_sparsity = args.starting_sparsity
 
     # get importance (this is effectively where the pruning method is chosen)
@@ -41,16 +43,23 @@ def prune(args):
 
     example_inputs = torch.randn(1, 3, 224, 224)
 
+    ignored_layers = []
+    for m in model.modules():
+        if isinstance(m, NetVLAD):
+            ignored_layers.append(m)
+
     pruner = tp.MetaPruner(
         model=model,
         example_inputs=example_inputs,
         importance=imp,
         iterative_steps=iterative_steps,
         pruning_ratio=args.max_sparsity,
-        global_pruning=True
+        global_pruning=True,
+        ignored_layers=ignored_layers
     )
 
     base_macs, base_nparams = tp.utils.count_ops_and_params(model, example_inputs)
+    print(model(example_inputs).shape)
 
     for i in range(iterative_steps):
         pruner.step()
@@ -69,17 +78,17 @@ def prune(args):
         )
         print("=" * 16)
 
-        current_sparsity = int(current_sparsity)
-        current_sparsity += int(args.pruning_step)
+        current_sparsity += args.pruning_step
 
         # obviously is dumb to save and reload but is simpler than doing anything else
         save(current_sparsity, args, model)
 
         # finetune (train) here
-        model = train.wrap_train(args)
+        model = wrap_train.wrap_train(args)
 
         # save the fine-tuned model
         save(current_sparsity, args, model)
+
 
 def get_importance(pruning_method):
 
@@ -97,7 +106,7 @@ def get_importance(pruning_method):
 
 def save(current_sparsity, args, model):
     # this is kinda wacky, might change naming at some point
-
+    os.mkdir(join(args.run_path, str(current_sparsity)))
     model_dir = join(args.run_path, str(current_sparsity), str(current_sparsity).split(".")[1] + ".pth")
     torch.save(model, model_dir)
 

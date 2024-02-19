@@ -11,14 +11,14 @@ from datetime import datetime
 import torchvision.transforms as transforms
 from torch.utils.data.dataloader import DataLoader
 
-import util
-import test
-import parser
-import commons
-import datasets_ws
-from model import network
-from model.sync_batchnorm import convert_model
-from model.functional import sare_ind, sare_joint
+from deep_visual_geo_localization_benchmark import util
+from deep_visual_geo_localization_benchmark import test
+from deep_visual_geo_localization_benchmark import commons
+from deep_visual_geo_localization_benchmark import datasets_ws
+
+from deep_visual_geo_localization_benchmark.model import network
+from deep_visual_geo_localization_benchmark.model.sync_batchnorm import convert_model
+from deep_visual_geo_localization_benchmark.model.functional import sare_ind, sare_joint
 
 
 # just gunna give everything the args, makes life easier as this was created with that
@@ -37,10 +37,10 @@ def train(args):
     #### Initial setup: parser, logging...
     start_time = datetime.now()
     args.save_dir = join("logs", args.run_path, start_time.strftime('%Y-%m-%d_%H-%M-%S'))
-    commons.setup_logging(args.run_path)
+    commons.setup_logging(args.save_dir)
     commons.make_deterministic(args.seed)
     logging.info(f"Arguments: {args}")
-    logging.info(f"The outputs are being saved in {args.run_path}")
+    logging.info(f"The outputs are being saved in {args.save_dir}")
     logging.info(f"Using {torch.cuda.device_count()} GPUs and {multiprocessing.cpu_count()} CPUs")
 
     #### Creation of Datasets
@@ -218,6 +218,7 @@ def train(args):
             best_r5 = recalls[1]
             not_improved_num = 0
             best_model = copy.deepcopy(model)
+            break
         else:
             not_improved_num += 1
             logging.info(

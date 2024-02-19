@@ -10,8 +10,8 @@ import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 from torch.utils.data import DataLoader, SubsetRandomSampler
 
-import model.functional as LF
-import model.normalization as normalization
+import deep_visual_geo_localization_benchmark.model.functional as LF
+import deep_visual_geo_localization_benchmark.model.normalization as normalization
 
 class MAC(nn.Module):
     def __init__(self):

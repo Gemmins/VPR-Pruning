@@ -8,10 +8,10 @@ from os.path import join
 from transformers import ViTModel
 from google_drive_downloader import GoogleDriveDownloader as gdd
 
-from cct import cct_14_7x2_384
-from aggregation import Flatten
-from normalization import L2Norm
-import aggregation as aggregation
+from deep_visual_geo_localization_benchmark.model.cct import cct_14_7x2_384
+from deep_visual_geo_localization_benchmark.model.aggregation import Flatten
+from deep_visual_geo_localization_benchmark.model.normalization import L2Norm
+import deep_visual_geo_localization_benchmark.model.aggregation as aggregation
 
 # Pretrained models on Google Landmarks v2 and Places 365
 PRETRAINED_MODELS = {

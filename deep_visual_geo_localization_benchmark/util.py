@@ -9,7 +9,7 @@ from collections import OrderedDict
 from os.path import join
 from sklearn.decomposition import PCA
 
-import datasets_ws
+from deep_visual_geo_localization_benchmark import datasets_ws
 
 
 def get_flops(model, input_shape=(480, 640)):
@@ -48,7 +48,7 @@ def resume_train(args):
     logging.debug(f"Loading checkpoint: {args.resume}")
     start_epoch_num = 0
     model = torch.load(args.resume)
-    optimizer = args.optim
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     best_r5 = 0
     not_improved_num = 0
     logging.debug(f"Loaded checkpoint: start_epoch_num = {start_epoch_num}, "

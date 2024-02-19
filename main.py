@@ -1,3 +1,5 @@
+import os
+
 import parser
 import wrap_train
 import prune
@@ -41,17 +43,20 @@ from os.path import join
 
 args = parser.parse_arguments()
 run_path = args.run_path
+if __name__ == '__main__':
 
+    if 't' in args.run_type:
+        s = join("0.0", "0.pth")
+        save_path = join(run_path, s)
+        os.mkdir(run_path)
+        os.mkdir(join(run_path, "0.0"))
+        print(save_path)
+        torch.save(wrap_train.wrap_train(args), save_path)
 
-if 't' in args.run_type:
-    s = join("0.0", "0.pth")
-    save_path = join(run_path, s)
-    torch.save(wrap_train.wrap_train(args), save_path)
+    # prune network, produce list of networks at different all levels of sparsity
+    if 'p' in args.run_type:
+        prune.prune(args)
 
-# prune network, produce list of networks at different all levels of sparsity
-if 'p' in args.run_type:
-    prune.prune(args)
-
-# evaluates all models within a directory
-if 'e' in args.run_type:
-    evaluate.evaluate(run_path)
+    # evaluates all models within a directory
+    if 'e' in args.run_type:
+        evaluate.evaluate(run_path)
