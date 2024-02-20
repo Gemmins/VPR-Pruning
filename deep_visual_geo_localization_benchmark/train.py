@@ -218,7 +218,6 @@ def train(args):
             best_r5 = recalls[1]
             not_improved_num = 0
             best_model = copy.deepcopy(model)
-            break
         else:
             not_improved_num += 1
             logging.info(

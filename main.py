@@ -22,7 +22,7 @@ from os.path import join
 # Currently, the looping is done within the pruning method, for torch-prune
 # methods this makes sense
 
-# Output of a full experiment should be something like this:
+# Output of a full experiment maybe should be something like this:
 # .
 # └── run_path
 #     ├── logging.txt
@@ -33,7 +33,7 @@ from os.path import join
 #     ├── 0.1
 #     │   ├── 1.pth
 #     │   ├── eval
-#     │   └── 0_logging.txt
+#     │   └── 1_logging.txt
 #    etc
 
 # TODO implement training
