@@ -24,7 +24,7 @@ from os.path import join
 
 # Output of a full experiment maybe should be something like this:
 # .
-# └── run_path
+# └── <run_path>
 #     ├── logging.txt
 #     ├── 0.0
 #     │   ├── 0.pth
@@ -36,8 +36,9 @@ from os.path import join
 #     │   └── 1_logging.txt
 #    etc
 
-# TODO implement training
-# TODO implement pruning loop
+# TODO add more pruning methods
+# TODO add more backend architectures
+# TODO maybe add more aggregations
 # TODO implement evaluation
 # TODO logging
 
@@ -46,11 +47,14 @@ run_path = args.run_path
 if __name__ == '__main__':
 
     if 't' in args.run_type:
+
         s = join("0.0", "0.pth")
         save_path = join(run_path, s)
+
         os.mkdir(run_path)
         os.mkdir(join(run_path, "0.0"))
         print(save_path)
+
         torch.save(wrap_train.wrap_train(args), save_path)
 
     # prune network, produce list of networks at different all levels of sparsity

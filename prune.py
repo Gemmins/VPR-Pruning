@@ -100,11 +100,24 @@ def prune(args):
 def get_importance(pruning_method):
 
     # TODO add more pruning methods here
+    # choice here to be made about choosing first or mean group reduction
+    # given that regardless the whole group will be removed
+    # probs makes more sense to do mean but idk
     match pruning_method:
+        case "random":
+            imp = tp.importance.RandomImportance
         case "l1_norm":
             imp = tp.importance.MagnitudeImportance(p=1, normalizer="mean", group_reduction="first")
         case "l2_norm":
             imp = tp.importance.MagnitudeImportance(p=2, normalizer="mean", group_reduction="first")
+        case "taylor":
+            imp = tp.importance.TaylorImportance
+        case "hessian":
+            imp = tp.importance.HessianImportance
+        case "bnScale":
+            imp = tp.importance.BNScaleImportance
+        case "lamp":
+            imp = tp.importance.LAMPImportance
         case _:
             imp = None
 
