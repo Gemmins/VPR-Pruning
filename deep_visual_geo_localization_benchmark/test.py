@@ -177,10 +177,15 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
     
     faiss_index = faiss.IndexFlatL2(args.features_dim)
     faiss_index.add(database_features)
-    del database_features, all_features
+
+    if args.precomputed():
+        del all_features
+    else:
+        del all_features, database_features
     
     logging.debug("Calculating recalls")
     distances, predictions = faiss_index.search(queries_features, max(args.recall_values))
+
     
     if test_method == 'nearest_crop':
         distances = np.reshape(distances, (eval_ds.queries_num, 20 * 5))
@@ -219,6 +224,9 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
             # relative to crops is eliminated
             predictions[q, 0, :20] = preds[np.sort(unique_idx)][:20]
         predictions = predictions[:, 0, :20]  # keep only the closer 20 predictions for each query
+
+    if args.precomputed():
+        precomputed_data = (queries_features, database_features, distances, )
 
     #### For each query, check if the predictions are correct
     positives_per_query = eval_ds.get_positives()

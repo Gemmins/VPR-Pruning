@@ -28,7 +28,7 @@ from os.path import join
 #     ├── logging.txt
 #     ├── 0.0
 #     │   ├── 0.pth
-#     │   ├── eval
+#     │   ├── computed
 #     │   └── 0_logging.txt
 #     ├── 0.1
 #     │   ├── 1.pth
@@ -63,4 +63,5 @@ if __name__ == '__main__':
 
     # evaluates all models within a directory
     if 'e' in args.run_type:
-        evaluate.evaluate(run_path)
+        args = vars(parser.parse_arguments())
+        evaluate.evaluate(run_path, args)
