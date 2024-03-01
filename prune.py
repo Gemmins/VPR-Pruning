@@ -91,7 +91,7 @@ def prune(args):
         save(sparsity, args, model)
 
         # finetune (train) here
-        pruner.model = wrap_train.wrap_train(args)
+        #pruner.model = wrap_train.wrap_train(args)
 
         # save the fine-tuned model
         save(sparsity, args, model)

@@ -28,7 +28,10 @@ def save_checkpoint(args, state, is_best, filename):
 
 
 def resume_model(args, model):
-    checkpoint = torch.load(args.resume, map_location=args.device)
+    # TODO allow both with check
+    #  but for now models aren't being loaded from state dicts
+    model = torch.load(args.resume, map_location=args.device)
+    """
     if 'model_state_dict' in checkpoint:
         state_dict = checkpoint['model_state_dict']
     else:
@@ -40,6 +43,7 @@ def resume_model(args, model):
     if list(state_dict.keys())[0].startswith('module'):
         state_dict = OrderedDict({k.replace('module.', ''): v for (k, v) in state_dict.items()})
     model.load_state_dict(state_dict)
+    """
     return model
 
 

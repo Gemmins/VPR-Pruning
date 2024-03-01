@@ -8,7 +8,7 @@
 from os.path import join
 import numpy as np
 from matplotlib import pyplot as plt
-import VPR_Bench
+#import VPR_Bench
 import os
 import deep_visual_geo_localization_benchmark as gl
 
@@ -20,10 +20,11 @@ def evaluate(args, vargs):
     # lots of nesting!
     # is really just cuz each model will be in their own folder
     for f in os.listdir(args.run_path):
-        if os.path.isdir(f):
-            for g in os.listdir(f):
+        dirpath = join(args.run_path, f)
+        if os.path.isdir(dirpath):
+            for g in os.listdir(dirpath):
 
-                if os.path.isfile(f):
+                if os.path.isfile(join(dirpath, g)):
                     name = g.split(".")
 
                     if name[1] == "pth":
@@ -41,7 +42,7 @@ def evaluate(args, vargs):
 
     plt.legend()
     # TODO naming
-    plt.savefig("test.pdf")
+    plt.savefig(join(args.run_path, "test.pdf"))
 
     # utilise VPR-Bench to get detailed benchamark for each level of sparsity generated
     def bench():
@@ -58,8 +59,8 @@ def evaluate(args, vargs):
         vpr_precomputed_matches_directory = vargs["precomputedmatchesdirectory"]
         VPR_techniques = vargs["VPRtechniquenames"]
 
-        VPR_Bench.execute_evaluation_mode.exec_eval_mode(VPR_evaluation_mode, dataset_name, vpr_dataset_directory,
-                                                         vpr_precomputed_matches_directory, VPR_techniques,
-                                                         save_matching_info, scale_percent)
+        #VPR_Bench.execute_evaluation_mode.exec_eval_mode(VPR_evaluation_mode, dataset_name, vpr_dataset_directory,
+        #                                                 vpr_precomputed_matches_directory, VPR_techniques,
+        #                                                 save_matching_info, scale_percent)
 
     return

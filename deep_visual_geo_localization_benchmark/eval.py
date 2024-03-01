@@ -30,10 +30,10 @@ from torch.utils.model_zoo import load_url
 from google_drive_downloader import GoogleDriveDownloader as gdd
 
 from deep_visual_geo_localization_benchmark import test
-import util
-import commons
-import datasets_ws
-from model import network
+from deep_visual_geo_localization_benchmark import util
+from deep_visual_geo_localization_benchmark import commons
+from deep_visual_geo_localization_benchmark import datasets_ws
+from deep_visual_geo_localization_benchmark.model import network
 def eval(args):
 
     OFF_THE_SHELF_RADENOVIC = {
@@ -103,7 +103,7 @@ def eval(args):
     logging.info(f"Test set: {test_ds}")
 
     ######################################### TEST on TEST SET #########################################
-    recalls, recalls_str = test.test(args, test_ds, model, args.test_method, pca)
+    recalls, recalls_str = test(args, test_ds, model, args.test_method, pca)
     logging.info(f"Recalls on {test_ds}: {recalls_str}")
 
     logging.info(f"Finished in {str(datetime.now() - start_time)[:-7]}")
