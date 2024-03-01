@@ -29,7 +29,7 @@ from datetime import datetime
 from torch.utils.model_zoo import load_url
 from google_drive_downloader import GoogleDriveDownloader as gdd
 
-import test
+from deep_visual_geo_localization_benchmark import test
 import util
 import commons
 import datasets_ws
@@ -107,3 +107,5 @@ def eval(args):
     logging.info(f"Recalls on {test_ds}: {recalls_str}")
 
     logging.info(f"Finished in {str(datetime.now() - start_time)[:-7]}")
+
+    return recalls

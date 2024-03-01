@@ -63,5 +63,5 @@ if __name__ == '__main__':
 
     # evaluates all models within a directory
     if 'e' in args.run_type:
-        args = vars(parser.parse_arguments())
-        evaluate.evaluate(run_path, args)
+        vargs = vars(parser.parse_arguments())
+        evaluate.evaluate(args, vargs)
