@@ -71,7 +71,6 @@ if __name__ == '__main__':
         s = join("0.0", "0.pth")
         save_path = join(run_path, s)
 
-        os.mkdir(run_path)
         os.mkdir(join(run_path, "0.0"))
         print(save_path)
 
