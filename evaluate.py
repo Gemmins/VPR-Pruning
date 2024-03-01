@@ -39,6 +39,10 @@ def evaluate(args, vargs):
         recalls = [1, 5, 10, 20]
         plt.plot(sparsity, p, label=f'recall @{recalls[i]}')
 
+    plt.legend()
+    # TODO naming
+    plt.savefig("test.pdf")
+
     # utilise VPR-Bench to get detailed benchamark for each level of sparsity generated
     def bench():
         # precompute and save the necessary outputs for the benchmark
