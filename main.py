@@ -48,7 +48,7 @@ from deep_visual_geo_localization_benchmark import commons
 
 def logs(args):
     start_time = datetime.now()
-    args.save_dir = join("logs", args.run_path, start_time.strftime('%Y-%m-%d_%H-%M-%S'))
+    args.save_dir = join(args.run_path, "logs",  start_time.strftime('%Y-%m-%d_%H-%M-%S'))
     commons.setup_logging(args.save_dir)
     commons.make_deterministic(args.seed)
     logging.info(f"Arguments: {args}")
@@ -80,14 +80,14 @@ if __name__ == '__main__':
     # prune network, produce list of networks at different all levels of sparsity
     if 'p' in args.run_type:
         if 't' not in args.run_type:
-            args = parser.parse_arguments()
+            logs(args)
 
         prune.prune(args)
 
     # evaluates all models within a directory
     if 'e' in args.run_type:
         if 't' not in args.run_type and 'p' not in args.run_type:
-            args = parser.parse_arguments()
+            logs(args)
         # TODO get rid of this
         vargs = vars(parser.parse_arguments())
         evaluate.evaluate(args, vargs)

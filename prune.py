@@ -1,4 +1,5 @@
 import copy
+import logging
 import os
 
 import torch_pruning as tp
@@ -50,6 +51,8 @@ def prune(args):
         if isinstance(m, NetVLAD):
             ignored_layers.append(m)
 
+    logging.info("Starting prune")
+
     pruner = tp.MetaPruner(
         model=model,
         example_inputs=example_inputs,
@@ -70,15 +73,15 @@ def prune(args):
         macs, nparams = tp.utils.count_ops_and_params(model, example_inputs)
         print(model)
         print(model(example_inputs).shape)
-        print(
+        logging.info(
             "  Iter %d/%d, Params: %.2f M => %.2f M"
             % (i + 1, iterative_steps, base_nparams / 1e6, nparams / 1e6)
         )
-        print(
+        logging.info(
             "  Iter %d/%d, MACs: %.2f G => %.2f G"
             % (i + 1, iterative_steps, base_macs / 1e9, macs / 1e9)
         )
-        print("=" * 16)
+        logging.info("=" * 16)
 
         sparsity += args.pruning_step
 
@@ -91,7 +94,7 @@ def prune(args):
         save(sparsity, args, model)
 
         # finetune (train) here
-        #pruner.model = wrap_train.wrap_train(args)
+        pruner.model = wrap_train.wrap_train(args)
 
         # save the fine-tuned model
         save(sparsity, args, model)
