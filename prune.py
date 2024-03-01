@@ -107,9 +107,9 @@ def get_importance(pruning_method):
         case "random":
             imp = tp.importance.RandomImportance
         case "l1_norm":
-            imp = tp.importance.MagnitudeImportance(p=1, normalizer="mean", group_reduction="first")
+            imp = tp.importance.MagnitudeImportance(p=1, normalizer="mean", group_reduction="mean")
         case "l2_norm":
-            imp = tp.importance.MagnitudeImportance(p=2, normalizer="mean", group_reduction="first")
+            imp = tp.importance.MagnitudeImportance(p=2, normalizer="mean", group_reduction="mean")
         case "taylor":
             imp = tp.importance.TaylorImportance
         case "hessian":

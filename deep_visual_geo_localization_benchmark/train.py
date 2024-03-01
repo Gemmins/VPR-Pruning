@@ -35,12 +35,16 @@ def train(args):
 
     # TODO fix this logging
     #### Initial setup: parser, logging...
+    """
     start_time = datetime.now()
     args.save_dir = join("logs", args.run_path, start_time.strftime('%Y-%m-%d_%H-%M-%S'))
     commons.setup_logging(args.save_dir)
     commons.make_deterministic(args.seed)
+    
     logging.info(f"Arguments: {args}")
     logging.info(f"The outputs are being saved in {args.save_dir}")
+    """
+    logging.info(f"Training network")
     logging.info(f"Using {torch.cuda.device_count()} GPUs and {multiprocessing.cpu_count()} CPUs")
 
     #### Creation of Datasets

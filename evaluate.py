@@ -38,11 +38,13 @@ def evaluate(args, vargs):
 
     for i, p in enumerate(performance):
         recalls = [1, 5, 10, 20]
-        plt.plot(sparsity, p, label=f'recall @{recalls[i]}')
+        plt.plot(sparsity, p, label=f'recall@{recalls[i]}')
 
+    plt.xlabel("Sparsity")
+    plt.ylabel("Recall")
+    plt.title(f"{args.backbone}-{args.aggregation}-{args.pruning_method}")
     plt.legend()
-    # TODO naming
-    plt.savefig(join(args.run_path, "test.pdf"))
+    plt.savefig(join(args.run_path, "recalls.pdf"))
 
     # utilise VPR-Bench to get detailed benchamark for each level of sparsity generated
     def bench():
