@@ -42,7 +42,14 @@ from deep_visual_geo_localization_benchmark import commons
 #         etc
 
 # maybe add more backend architectures
-# TODO add a couple more architechtures
+# TODO add a couple more architectures:
+#  One or the other of the first two,
+#  DenseNet121_Weights.IMAGENET1K_V1,
+#  MobileNet_V3_Large_Weights.IMAGENET1K_V2,
+#  EfficientNet_B2_Weights.IMAGENET1K_V1,
+#  RegNet_Y_1_6GF_Weights.IMAGENET1K_V2,
+#  ShuffleNet_V2_X2_0_Weights.IMAGENET1K_V1
+
 
 
 def logs(args):

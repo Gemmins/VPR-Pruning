@@ -17,7 +17,8 @@ def parse_arguments():
 
     # network
     parser.add_argument("--backbone", type=str, default=None,
-                        help="Backend of the network", choices=["resnet", "vgg", "resnet18conv4", "resnet50conv5"])
+                        help="Backend of the network", choices=["resnet", "vgg", "resnet18conv5", "resnet18conv4", "dense",
+                                                                "efficient", "mobile", "reg", "shuffle"])
     parser.add_argument("--aggregation", type=str, default=None,
                         help="Network aggregation layer", choices=["netvlad", "gem"])
     parser.add_argument("--method", type=str, default=None,

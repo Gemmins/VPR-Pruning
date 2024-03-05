@@ -180,9 +180,22 @@ def get_backbone(args):
         
         args.features_dim = 768
         return backbone
+    # added backbones, don't know if they work yet
+    elif args.backbone == "mobile":
+        backbone = torchvision.models.mobilenet_v3_large(weights="IMAGENET1K_V2")
+        return backbone
+    elif args.backbone == "efficient":
+        backbone = torchvision.models.efficientnet_b2(weights="IMAGENET1K_V1")
+        return backbone
+    elif args.backbone == "regnet":
+        backbone = torchvision.models.regnet_y_1_6gf(weights="IMAGENET1K_V2")
+        return backbone
+    elif args.backbone == "shuffle":
+        backbone = torchvision.models.shufflenet_v2_x2_0(weights="IMAGENET1K_V1")
+        return backbone
 
     backbone = torch.nn.Sequential(*layers)
-    args.features_dim = get_output_channels_dim(backbone)  # Dinamically obtain number of channels in output
+    args.features_dim = get_output_channels_dim(backbone)  # Dynamically obtain number of channels in output
     return backbone
 
 
