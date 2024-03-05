@@ -41,9 +41,8 @@ from deep_visual_geo_localization_benchmark import commons
 #         │
 #         etc
 
-# TODO add more backend architectures
-# TODO maybe add more aggregations
-# TODO logging
+# maybe add more backend architectures
+# TODO add a couple more architechtures
 
 
 def logs(args):

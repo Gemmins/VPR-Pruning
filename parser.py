@@ -20,6 +20,8 @@ def parse_arguments():
                         help="Backend of the network", choices=["resnet", "vgg", "resnet18conv4", "resnet50conv5"])
     parser.add_argument("--aggregation", type=str, default=None,
                         help="Network aggregation layer", choices=["netvlad", "gem"])
+    parser.add_argument("--method", type=str, default=None,
+                        help="Which VPR technique to use", choices=['NetVlad, EigenPlaces, PatchNetVlad'])
 
     # training
     parser.add_argument("--resume", type=str, default=None,

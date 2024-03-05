@@ -1,14 +1,11 @@
 # should loop through all models in the test folder
-# at each model it should use the vpr-bench to generate metrics for that model
-# these should be saved in the model folder
-# also use the gl to get the recall @N for each model saved in text in each folder
+# use the gl to get the recall @N for each model saved in text in each folder
 # should then generate a graph of recall@N against sparsity from these
 # graph should be saved in test folder
 
 from os.path import join
 import numpy as np
 from matplotlib import pyplot as plt
-#import VPR_Bench
 import os
 import deep_visual_geo_localization_benchmark as gl
 
@@ -46,7 +43,10 @@ def evaluate(args, vargs):
     plt.legend()
     plt.savefig(join(args.run_path, "recalls.pdf"))
 
-    # utilise VPR-Bench to get detailed benchamark for each level of sparsity generated
+
+
+    """
+    # utilise  to get detailed benchamark for each level of sparsity generated
     def bench():
         # precompute and save the necessary outputs for the benchmark
         # these outputs should be saved in the current directory
@@ -66,3 +66,4 @@ def evaluate(args, vargs):
         #                                                 save_matching_info, scale_percent)
 
     return
+    """

@@ -22,7 +22,6 @@ from deep_visual_geo_localization_benchmark.model.functional import sare_ind, sa
 
 
 # just gunna give everything the args, makes life easier as this was created with that
-# data structure in mind to access the args
 
 # the result of running this function should be the creation of a trained model
 # with a given name at the desired location, along with important stuff logged
