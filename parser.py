@@ -18,7 +18,7 @@ def parse_arguments():
     # network
     parser.add_argument("--backbone", type=str, default=None,
                         help="Backend of the network", choices=["resnet", "vgg", "resnet18conv5", "resnet18conv4", "dense",
-                                                                "efficient", "mobile", "reg", "shuffle"])
+                                                                "efficient", "mobile", "regnet", "shuffle", "resnet50conv5"])
     parser.add_argument("--aggregation", type=str, default=None,
                         help="Network aggregation layer", choices=["netvlad", "gem"])
     parser.add_argument("--method", type=str, default=None,
@@ -39,7 +39,9 @@ def parse_arguments():
 
     # pruning
     parser.add_argument("--pruning_method", type=str, default=None,
-                        help="Type of pruning to perform on the network", choices=["l1_norm", "l2_norm"])
+                        help="Type of pruning to perform on the network", choices=["l1_norm", "l2_norm",
+                                                                                   "hessian", "taylor", "bnScale",
+                                                                                   "lamp", "random"])
     parser.add_argument("--max_sparsity", type=float, default=None,
                         help="The level of sparsity you want to go to")
     parser.add_argument("--pruning_step", type=float, default=None,
@@ -73,7 +75,7 @@ def parse_arguments():
                         help="margin for the triplet loss")
     parser.add_argument("--epochs_num", type=int, default=1000,
                         help="number of epochs to train for")
-    parser.add_argument("--patience", type=int, default=3)
+    parser.add_argument("--patience", type=int, default=2)
     parser.add_argument("--lr", type=float, default=0.00001, help="_")
     parser.add_argument("--lr_crn_layer", type=float, default=5e-3, help="Learning rate for the CRN layer")
     parser.add_argument("--lr_crn_net", type=float, default=5e-4,

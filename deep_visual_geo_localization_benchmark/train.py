@@ -10,6 +10,7 @@ from os.path import join
 from datetime import datetime
 import torchvision.transforms as transforms
 from torch.utils.data.dataloader import DataLoader
+import os
 
 from deep_visual_geo_localization_benchmark import util
 from deep_visual_geo_localization_benchmark import test
@@ -27,9 +28,11 @@ from deep_visual_geo_localization_benchmark.model.functional import sare_ind, sa
 # with a given name at the desired location, along with important stuff logged
 # also into the correct location
 
-# TODO add autocast
 
-def train(args):
+def train(args, pruner=None):
+
+
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
 
     torch.backends.cudnn.benchmark = True  # Provides a speedup
 
@@ -121,6 +124,8 @@ def train(args):
 
     best_model = copy.deepcopy(model)
 
+    scaler = torch.cuda.amp.GradScaler()
+
     #### Training loop
     for epoch_num in range(start_epoch_num, args.epochs_num):
         logging.info(f"Start training epoch: {epoch_num:02d}")
@@ -157,6 +162,7 @@ def train(args):
                         images = transforms.RandomHorizontalFlip()(images)
 
                     # Compute features of all images (images contains queries, positives and negatives)
+                    torch.cuda.empty_cache()
                     features = model(images.to(args.device))
                     loss_triplet = 0
 
@@ -189,8 +195,16 @@ def train(args):
                     loss_triplet /= (args.train_batch_size * args.negs_num_per_query)
 
                 optimizer.zero_grad()
-                loss_triplet.backward()
-                optimizer.step()
+                scaler.scale(loss_triplet).backward()
+                #loss_triplet.backward()
+
+                if pruner is not None:
+                    if args.pruning_method == "bnScale" or args.pruning_method == "l2_norm" or args.pruning_method == "l1_norm":
+                        pruner.regularize(model, loss_triplet)
+
+                scaler.step(optimizer)
+                scaler.update()
+                #optimizer.step()
 
                 # Keep track of all losses by appending them to epoch_losses
                 batch_loss = loss_triplet.item()
@@ -212,11 +226,11 @@ def train(args):
 
         # Actually not going to save each training loop
         # Save checkpoint, which contains all training parameters
-#       util.save_checkpoint(args, {
-#           "epoch_num": epoch_num, "model_state_dict": model.state_dict(),
-#           "optimizer_state_dict": optimizer.state_dict(), "recalls": recalls, "best_r5": best_r5,
-#           "not_improved_num": not_improved_num
-#       }, is_best, filename="last_model.pth")
+        #       util.save_checkpoint(args, {
+        #           "epoch_num": epoch_num, "model_state_dict": model.state_dict(),
+        #           "optimizer_state_dict": optimizer.state_dict(), "recalls": recalls, "best_r5": best_r5,
+        #           "not_improved_num": not_improved_num
+        #       }, is_best, filename="last_model.pth")
 
         # If recall@5 did not improve for "many" epochs, stop training
         if is_best:
@@ -236,13 +250,10 @@ def train(args):
     logging.info(f"Trained for {epoch_num + 1:02d} epochs, in total in {str(datetime.now() - start_time)[:-7]}")
 
     #### Test best model on test set
-    #best_model_state_dict = torch.load(join(args.save_dir, "best_model.pth"))["model_state_dict"]
-    #model.load_state_dict(best_model_state_dict)
+    # best_model_state_dict = torch.load(join(args.save_dir, "best_model.pth"))["model_state_dict"]
+    # model.load_state_dict(best_model_state_dict)
 
     recalls, recalls_str = test.test(args, test_ds, best_model, test_method=args.test_method)
     logging.info(f"Recalls on {test_ds}: {recalls_str}")
 
     return best_model
-
-
-

@@ -67,8 +67,13 @@ if __name__ == '__main__':
 
     if 't' in args.run_type:
         start_time = datetime.now()
-        folderName = (f"{start_time.strftime('%Y-%m-%d_%H-%M-%S')}-{args.backbone}-"
-                      f"{args.aggregation}-{args.pruning_method}")
+        folderName = (f"{start_time.strftime('%Y-%m-%d_%H-%M-%S')}-{args.backbone}"
+                      f"-{args.pruning_method}-{args.aggregation}")
+
+        exists = True
+        if not os.path.exists(join(args.run_path, args.backbone)):
+            exists = False
+
         args.run_path = join(args.run_path, folderName)
         run_path = args.run_path
 
@@ -79,12 +84,21 @@ if __name__ == '__main__':
 
         os.mkdir(join(run_path, "0.0"))
         print(save_path)
-
-        torch.save(wrap_train.wrap_train(args), save_path)
+        model = wrap_train.wrap_train(args)
+        torch.save(model, save_path)
+        # will save the base trained network in a folder named as the backbone
+        if not exists:
+            torch.save(model, join(args.run_path, "..", args.backbone, "0.pth"))
 
     # prune network, produce list of networks at different all levels of sparsity
     if 'p' in args.run_type:
         if 't' not in args.run_type:
+            if args.sparsity == 0.0:
+                start_time = datetime.now()
+                folderName = (f"{start_time.strftime('%Y-%m-%d_%H-%M-%S')}-{args.backbone}"
+                              f"-{args.pruning_method}-{args.aggregation}")
+                args.run_path = join(args.run_path, folderName)
+                os.mkdir(args.run_path)
             logs(args)
 
         prune.prune(args)

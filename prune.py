@@ -33,16 +33,24 @@ def prune(args):
     sparsity = str(args.sparsity)
     # load model
     model_name = sparsity.split(".")[1] + ".pth"
-    model_dir = join(args.run_path, sparsity, model_name)
+
+    if not float(sparsity) == 0:
+        model_dir = join(args.run_path, sparsity, model_name)
+
+    else:
+        model_dir = join(args.run_path, "..", args.backbone, "0.pth")
+        model = torch.load(model_dir)
+        save(sparsity, args, model)
 
     model = torch.load(model_dir)
+
     model.zero_grad()
     sparsity = args.sparsity
 
     # get importance (this is effectively where the pruning method is chosen)
     imp = get_importance(args.pruning_method)
 
-    iterative_steps = round(args.max_sparsity / args.pruning_step)
+    iterative_steps = round((args.max_sparsity - args.sparsity) / args.pruning_step)
 
     example_inputs = torch.randn(1, 3, 224, 224)
 
@@ -94,7 +102,7 @@ def prune(args):
         save(sparsity, args, model)
 
         # finetune (train) here
-        pruner.model = wrap_train.wrap_train(args)
+        pruner.model = wrap_train.wrap_train(args, pruner=pruner)
 
         # save the fine-tuned model
         save(sparsity, args, model)

@@ -104,6 +104,7 @@ def get_pretrained_model(args):
 
 
 def get_backbone(args):
+    flag = False
     # The aggregation layer works differently based on the type of architecture
     args.work_with_tokens = args.backbone.startswith('cct') or args.backbone.startswith('vit')
     if args.backbone.startswith("resnet"):
@@ -183,19 +184,30 @@ def get_backbone(args):
     # added backbones, don't know if they work yet
     elif args.backbone == "mobile":
         backbone = torchvision.models.mobilenet_v3_large(weights="IMAGENET1K_V2")
-        return backbone
+        layers = list(backbone.features.children())[:-2]
     elif args.backbone == "efficient":
-        backbone = torchvision.models.efficientnet_b2(weights="IMAGENET1K_V1")
-        return backbone
+        backbone = torchvision.models.efficientnet_b3(weights="IMAGENET1K_V1")
+        layers = list(backbone.features.children())[:-2]
+        args.resize = [320, 300]
     elif args.backbone == "regnet":
         backbone = torchvision.models.regnet_y_1_6gf(weights="IMAGENET1K_V2")
-        return backbone
+        layers = list(backbone.children())[:-2]
+        flag = True
     elif args.backbone == "shuffle":
         backbone = torchvision.models.shufflenet_v2_x2_0(weights="IMAGENET1K_V1")
-        return backbone
+        layers = list(backbone.children())[:-2]
+        flag = True
+
 
     backbone = torch.nn.Sequential(*layers)
     args.features_dim = get_output_channels_dim(backbone)  # Dynamically obtain number of channels in output
+
+    if flag:
+        layers.append(torch.nn.Conv2d(args.features_dim, 256, 1))
+        backbone = torch.nn.Sequential(*layers)
+        args.features_dim = get_output_channels_dim(backbone)
+
+    logging.info(f"backbone output channel dimensions: {args.features_dim}")
     return backbone
 
 
