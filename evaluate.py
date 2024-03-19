@@ -35,7 +35,7 @@ def evaluate(args, vargs):
                         sparsity.append(float("0." + name[0]))
                         args.resume = join(args.run_path, f, g)
                         args.save_dir = join(args.run_path, f)
-                        #performance.append(gl.eval(args))
+                        performance.append(gl.eval(args))
                         timings.append(estimate_latency(args))
                         dimensions.append(get_dimensions(args))
                         columns.append(float("0." + name[0]))
@@ -44,7 +44,7 @@ def evaluate(args, vargs):
     eval_dir = join(args.run_path, "eval")
     os.mkdir(eval_dir)
 
-    """
+
     for i, p in enumerate(performance):
         recalls = [1, 5, 10, 20]
         plt.plot(sparsity, p, label=f'recall@{recalls[i]}')
@@ -54,7 +54,7 @@ def evaluate(args, vargs):
     plt.title(f"{args.backbone}-{args.aggregation}-{args.pruning_method}")
     plt.legend()
     plt.savefig(join(eval_dir, "recalls.pdf"))
-    """
+
 
     timings = np.array(timings).T
     plt.figure()
