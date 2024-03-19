@@ -74,7 +74,7 @@ def prune(args):
     base_macs, base_nparams = tp.utils.count_ops_and_params(model, example_inputs)
     print(model(example_inputs).shape)
 
-    for i in range(iterative_steps):
+    for i in range(iterative_steps-1):
         pruner.step()
 
         # would be good to log/save this info somewhere
@@ -83,11 +83,11 @@ def prune(args):
         print(model(example_inputs).shape)
         logging.info(
             "  Iter %d/%d, Params: %.2f M => %.2f M"
-            % (i + 1, iterative_steps, base_nparams / 1e6, nparams / 1e6)
+            % (i + 1, iterative_steps-1, base_nparams / 1e6, nparams / 1e6)
         )
         logging.info(
             "  Iter %d/%d, MACs: %.2f G => %.2f G"
-            % (i + 1, iterative_steps, base_macs / 1e9, macs / 1e9)
+            % (i + 1, iterative_steps-1, base_macs / 1e9, macs / 1e9)
         )
         logging.info("=" * 16)
 
@@ -102,7 +102,8 @@ def prune(args):
         save(sparsity, args, model)
 
         # finetune (train) here
-        pruner.model = wrap_train.wrap_train(args, pruner=pruner)
+        if not args.no_finetune:
+            pruner.model = wrap_train.wrap_train(args, pruner=pruner)
 
         # save the fine-tuned model
         save(sparsity, args, model)

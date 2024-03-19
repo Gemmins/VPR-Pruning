@@ -21,8 +21,6 @@ def parse_arguments():
                                                                 "efficient", "mobile", "regnet", "shuffle", "resnet50conv5"])
     parser.add_argument("--aggregation", type=str, default=None,
                         help="Network aggregation layer", choices=["netvlad", "gem"])
-    parser.add_argument("--method", type=str, default=None,
-                        help="Which VPR technique to use", choices=['NetVlad, EigenPlaces, PatchNetVlad'])
 
     # training
     parser.add_argument("--resume", type=str, default=None,
@@ -48,6 +46,9 @@ def parse_arguments():
                         help="How much to prune each pass")
     parser.add_argument("--sparsity", type=float, default=0.0,
                         help="If network is already partially pruned, provide sparsity")
+    parser.add_argument("--no_finetune", type=bool, default=False,
+                        help="Fine-tune after each pruning step or not")
+
 
     parser.add_argument("--precompute", type=bool, default=False,
                         help="Flag to output computed descriptors and matching of model")

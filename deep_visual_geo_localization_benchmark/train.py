@@ -66,6 +66,7 @@ def train(args, pruner=None):
     #### Initialize model
     model = network.GeoLocalizationNet(args)
     model = model.to(args.device)
+
     if args.aggregation in ["netvlad", "crn"]:  # If using NetVLAD layer, initialize it
         if not args.resume:
             triplets_ds.is_inference = True

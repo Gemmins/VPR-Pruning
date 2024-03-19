@@ -188,7 +188,6 @@ def get_backbone(args):
     elif args.backbone == "efficient":
         backbone = torchvision.models.efficientnet_b3(weights="IMAGENET1K_V1")
         layers = list(backbone.features.children())[:-2]
-        args.resize = [320, 300]
     elif args.backbone == "regnet":
         backbone = torchvision.models.regnet_y_1_6gf(weights="IMAGENET1K_V2")
         layers = list(backbone.children())[:-2]
@@ -196,7 +195,7 @@ def get_backbone(args):
     elif args.backbone == "shuffle":
         backbone = torchvision.models.shufflenet_v2_x2_0(weights="IMAGENET1K_V1")
         layers = list(backbone.children())[:-2]
-        flag = True
+        flag = False
 
 
     backbone = torch.nn.Sequential(*layers)

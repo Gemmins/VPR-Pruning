@@ -8,14 +8,16 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os
 import deep_visual_geo_localization_benchmark as gl
-
-
+import torch
+import torch_pruning as tp
 def evaluate(args, vargs):
     performance = []
     sparsity = []
-
+    timings = []
     # lots of nesting!
     # is really just cuz each model will be in their own folder
+    a = os.listdir(args.run_path)
+
     for f in os.listdir(args.run_path):
         dirpath = join(args.run_path, f)
         if os.path.isdir(dirpath):
@@ -25,25 +27,30 @@ def evaluate(args, vargs):
                     name = g.split(".")
 
                     if name[1] == "pth":
-                        sparsity.append(int(name[0]))
+                        sparsity.append(float("0." + name[0]))
                         args.resume = join(args.run_path, f, g)
                         args.save_dir = join(args.run_path, f)
                         performance.append(gl.eval(args))
-
+                        timings.append(timing(args))
 
     performance = np.array(performance).T
 
     for i, p in enumerate(performance):
         recalls = [1, 5, 10, 20]
         plt.plot(sparsity, p, label=f'recall@{recalls[i]}')
-
+    plt.ylim(0, 100)
     plt.xlabel("Sparsity")
     plt.ylabel("Recall")
     plt.title(f"{args.backbone}-{args.aggregation}-{args.pruning_method}")
     plt.legend()
     plt.savefig(join(args.run_path, "recalls.pdf"))
 
-
+    plt.figure()
+    plt.plot(sparsity, timings)
+    plt.xlabel("Sparsity")
+    plt.ylabel("Inference time")
+    plt.title(f"{args.backbone}-{args.aggregation}-{args.pruning_method}")
+    plt.savefig(join(args.run_path, "timing.pdf"))
 
     """
     # utilise  to get detailed benchamark for each level of sparsity generated
@@ -67,3 +74,37 @@ def evaluate(args, vargs):
 
     return
     """
+
+
+def timing(args):
+
+    model = gl.util.resume_model(args, 1)
+    device = torch.device("cuda")
+    model.to(device)
+    dummy_input = torch.randn(1, 3, 224, 224, dtype=torch.float).to(device)
+
+    # INIT LOGGERS
+    starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+    repetitions = 1000
+    timings = np.zeros((repetitions, 1))
+    # GPU-WARM-UP
+    for _ in range(10):
+        _ = model(dummy_input)
+    # MEASURE PERFORMANCE
+    with torch.no_grad():
+        for rep in range(repetitions):
+            starter.record()
+            _ = model(dummy_input)
+            ender.record()
+            # WAIT FOR GPU SYNC
+            torch.cuda.synchronize()
+            curr_time = starter.elapsed_time(ender)
+            timings[rep] = curr_time
+
+    mean_syn = np.sum(timings) / repetitions
+    std_syn = np.std(timings)
+    print(f"time: {mean_syn}")
+    macs, params = tp.utils.count_ops_and_params(model, dummy_input)
+    print(f"macs: {macs}")
+    print(f"params: {params}")
+    return mean_syn

@@ -46,7 +46,7 @@ from deep_visual_geo_localization_benchmark import commons
 #  One or the other of the first two,
 #  DenseNet121_Weights.IMAGENET1K_V1,
 #  MobileNet_V3_Large_Weights.IMAGENET1K_V2,
-#  EfficientNet_B2_Weights.IMAGENET1K_V1,
+#  EfficientNet_B3_Weights.IMAGENET1K_V1,
 #  RegNet_Y_1_6GF_Weights.IMAGENET1K_V2,
 #  ShuffleNet_V2_X2_0_Weights.IMAGENET1K_V1
 
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         exists = True
         if not os.path.exists(join(args.run_path, args.backbone)):
             exists = False
+            os.mkdir(join(args.run_path, args.backbone))
 
         args.run_path = join(args.run_path, folderName)
         run_path = args.run_path
@@ -84,6 +85,10 @@ if __name__ == '__main__':
 
         os.mkdir(join(run_path, "0.0"))
         print(save_path)
+
+        if args.backbone == "efficient":
+            args.resize = [320, 300]
+
         model = wrap_train.wrap_train(args)
         torch.save(model, save_path)
         # will save the base trained network in a folder named as the backbone
