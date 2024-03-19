@@ -5,6 +5,7 @@ import prune
 import evaluate
 import logging
 import torch
+import dill
 from os.path import join
 from datetime import datetime
 from deep_visual_geo_localization_benchmark import commons
@@ -90,10 +91,10 @@ if __name__ == '__main__':
             args.resize = [320, 300]
 
         model = wrap_train.wrap_train(args)
-        torch.save(model, save_path)
+        torch.save(model, save_path, pickle_module=dill)
         # will save the base trained network in a folder named as the backbone
         if not exists:
-            torch.save(model, join(args.run_path, "..", args.backbone, "0.pth"))
+            torch.save(model, join(args.run_path, "..", args.backbone, "0.pth"), pickle_module=dill)
 
     # prune network, produce list of networks at different all levels of sparsity
     if 'p' in args.run_type:

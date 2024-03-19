@@ -7,6 +7,7 @@ import torch
 from os.path import join
 import test
 import wrap_train
+import dill
 from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
@@ -141,6 +142,6 @@ def save(sparsity, args, model):
     if not os.path.isdir(join(args.run_path, str(sparsity))):
         os.mkdir(join(args.run_path, str(sparsity)))
     model_dir = join(args.run_path, str(sparsity), str(sparsity).split(".")[1] + ".pth")
-    torch.save(model, model_dir)
+    torch.save(model, model_dir, pickle_module=dill)
 
     args.resume = model_dir

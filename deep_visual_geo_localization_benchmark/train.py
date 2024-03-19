@@ -195,22 +195,22 @@ def train(args, pruner=None):
                     del features
                     loss_triplet /= (args.train_batch_size * args.negs_num_per_query)
 
-                optimizer.zero_grad()
-                scaler.scale(loss_triplet).backward()
-                #loss_triplet.backward()
+                    optimizer.zero_grad()
+                    scaler.scale(loss_triplet).backward()
+                    #loss_triplet.backward()
 
-                if pruner is not None:
-                    if args.pruning_method == "bnScale" or args.pruning_method == "l2_norm" or args.pruning_method == "l1_norm":
-                        pruner.regularize(model, loss_triplet)
+                    if pruner is not None:
+                        if args.pruning_method == "bnScale" or args.pruning_method == "l2_norm" or args.pruning_method == "l1_norm":
+                            pruner.regularize(model, loss_triplet)
 
-                scaler.step(optimizer)
-                scaler.update()
-                #optimizer.step()
+                    scaler.step(optimizer)
+                    scaler.update()
+                    #optimizer.step()
 
-                # Keep track of all losses by appending them to epoch_losses
-                batch_loss = loss_triplet.item()
-                epoch_losses = np.append(epoch_losses, batch_loss)
-                del loss_triplet
+                    # Keep track of all losses by appending them to epoch_losses
+                    batch_loss = loss_triplet.item()
+                    epoch_losses = np.append(epoch_losses, batch_loss)
+                    del loss_triplet
 
             logging.debug(f"Epoch[{epoch_num:02d}]({loop_num}/{loops_num}): " +
                           f"current batch triplet loss = {batch_loss:.4f}, " +

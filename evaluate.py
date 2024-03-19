@@ -9,6 +9,8 @@ from matplotlib import pyplot as plt
 import os
 import deep_visual_geo_localization_benchmark as gl
 import torch
+import time, gc
+from tqdm import tqdm
 import torch_pruning as tp
 def evaluate(args, vargs):
     performance = []
@@ -31,7 +33,7 @@ def evaluate(args, vargs):
                         args.resume = join(args.run_path, f, g)
                         args.save_dir = join(args.run_path, f)
                         performance.append(gl.eval(args))
-                        timings.append(timing(args))
+                        timings.append(estimate_latency(args))
 
     performance = np.array(performance).T
 
@@ -76,25 +78,24 @@ def evaluate(args, vargs):
     """
 
 
-def timing(args):
+def estimate_latency(args, repetitions=50):
 
     model = gl.util.resume_model(args, 1)
     device = torch.device("cuda")
     model.to(device)
-    dummy_input = torch.randn(1, 3, 224, 224, dtype=torch.float).to(device)
+    example_inputs = torch.randn(48, 3, 224, 224, dtype=torch.float).to(device)
 
-    # INIT LOGGERS
+
     starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
-    repetitions = 1000
-    timings = np.zeros((repetitions, 1))
-    # GPU-WARM-UP
-    for _ in range(10):
-        _ = model(dummy_input)
-    # MEASURE PERFORMANCE
+    timings=np.zeros((repetitions,1))
+
+    for _ in range(5):
+        _ = model(example_inputs)
+
     with torch.no_grad():
         for rep in range(repetitions):
             starter.record()
-            _ = model(dummy_input)
+            _ = model(example_inputs)
             ender.record()
             # WAIT FOR GPU SYNC
             torch.cuda.synchronize()
@@ -103,8 +104,5 @@ def timing(args):
 
     mean_syn = np.sum(timings) / repetitions
     std_syn = np.std(timings)
-    print(f"time: {mean_syn}")
-    macs, params = tp.utils.count_ops_and_params(model, dummy_input)
-    print(f"macs: {macs}")
-    print(f"params: {params}")
+    print(mean_syn)
     return mean_syn
