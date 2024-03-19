@@ -91,7 +91,10 @@ if __name__ == '__main__':
             args.resize = [320, 300]
 
         model = wrap_train.wrap_train(args)
-        torch.save(model, save_path, pickle_module=dill)
+
+        if 'p' in args.run_type or 'e' in args.run_type:
+            torch.save(model, save_path, pickle_module=dill)
+
         # will save the base trained network in a folder named as the backbone
         if not exists:
             torch.save(model, join(args.run_path, "..", args.backbone, "0.pth"), pickle_module=dill)
