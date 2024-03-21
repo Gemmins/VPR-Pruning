@@ -116,12 +116,15 @@ def get_backbone(args):
             backbone = torchvision.models.resnet50(pretrained=True)
         elif args.backbone.startswith("resnet101"):
             backbone = torchvision.models.resnet101(pretrained=True)
+        # need to remove this as it messes with the pruning stuff
+        """
         for name, child in backbone.named_children():
             # Freeze layers before conv_3
             if name == "layer3":
                 break
             for params in child.parameters():
                 params.requires_grad = False
+        """
         if args.backbone.endswith("conv4"):
             logging.debug(f"Train only conv4_x of the resnet{args.backbone.split('conv')[0]} (remove conv5_x), freeze the previous ones")
             layers = list(backbone.children())[:-3]
