@@ -54,7 +54,7 @@ def evaluate(args, vargs):
     plt.title(f"{args.backbone}-{args.aggregation}-{args.pruning_method}")
     plt.legend()
     plt.savefig(join(eval_dir, "recalls.pdf"))
-
+    
 
     timings = np.array(timings).T
     plt.figure()

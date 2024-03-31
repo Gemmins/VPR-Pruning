@@ -29,7 +29,7 @@ from deep_visual_geo_localization_benchmark.model.functional import sare_ind, sa
 # also into the correct location
 
 
-def train(args, pruner=None):
+def train(args, pruner=None, cmodel=None):
 
 
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
@@ -104,7 +104,7 @@ def train(args, pruner=None):
     #### Resume model, optimizer, and other training parameters
     if args.resume:
         if args.aggregation != 'crn':
-            model, optimizer, best_r5, start_epoch_num, not_improved_num = util.resume_train(args)
+            model, optimizer, best_r5, start_epoch_num, not_improved_num = util.resume_train(args, cmodel)
         else:
             # CRN uses pretrained NetVLAD, then requires loading with strict=False and
             # does not load the optimizer from the checkpoint file.
@@ -234,6 +234,7 @@ def train(args, pruner=None):
         #       }, is_best, filename="last_model.pth")
 
         # If recall@5 did not improve for "many" epochs, stop training
+
         if is_best:
             logging.info(f"Improved: previous best R@5 = {best_r5:.1f}, current R@5 = {recalls[1]:.1f}")
             best_r5 = recalls[1]

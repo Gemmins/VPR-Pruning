@@ -1,5 +1,7 @@
 
 import re
+
+import dill
 import torch
 import shutil
 import logging
@@ -30,7 +32,7 @@ def save_checkpoint(args, state, is_best, filename):
 def resume_model(args, model):
     # TODO allow both with check
     #  but for now models aren't being loaded from state dicts
-    model = torch.load(args.resume, map_location=args.device)
+    model = torch.load(args.resume, map_location=args.device, pickle_module=dill)
     """
     if 'model_state_dict' in checkpoint:
         state_dict = checkpoint['model_state_dict']
@@ -47,11 +49,12 @@ def resume_model(args, model):
     return model
 
 
-def resume_train(args):
+def resume_train(args, model=None):
     """Load model, optimizer, and other training parameters"""
     logging.debug(f"Loading checkpoint: {args.resume}")
     start_epoch_num = 0
-    model = torch.load(args.resume)
+    if model is None:
+        model = torch.load(args.resume, pickle_module=dill)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     best_r5 = 0
     not_improved_num = 0

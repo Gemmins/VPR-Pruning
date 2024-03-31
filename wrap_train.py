@@ -7,9 +7,9 @@ import deep_visual_geo_localization_benchmark as gl
 # this means some stuff will probs be redundant if own training is implemented
 
 
-def wrap_train(args, pruner=None):
+def wrap_train(args, pruner=None, model=None):
 
-    model = gl.train(args, pruner)
+    model = gl.train(args, pruner, model)
 
     return model
 

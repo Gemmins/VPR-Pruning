@@ -126,10 +126,10 @@ def get_backbone(args):
                 params.requires_grad = False
         """
         if args.backbone.endswith("conv4"):
-            logging.debug(f"Train only conv4_x of the resnet{args.backbone.split('conv')[0]} (remove conv5_x), freeze the previous ones")
+            logging.debug(f"remove conv5_x")
             layers = list(backbone.children())[:-3]
         elif args.backbone.endswith("conv5"):
-            logging.debug(f"Train only conv4_x and conv5_x of the resnet{args.backbone.split('conv')[0]}, freeze the previous ones")
+            logging.debug(f"Training all the layers of the network :)")
             layers = list(backbone.children())[:-2]
     elif args.backbone == "vgg16":
         if args.pretrain in ['places', 'gldv2']:
@@ -194,7 +194,7 @@ def get_backbone(args):
     elif args.backbone == "regnet":
         backbone = torchvision.models.regnet_y_1_6gf(weights="IMAGENET1K_V2")
         layers = list(backbone.children())[:-2]
-        flag = True
+        flag = False
     elif args.backbone == "shuffle":
         backbone = torchvision.models.shufflenet_v2_x2_0(weights="IMAGENET1K_V1")
         layers = list(backbone.children())[:-2]

@@ -9,6 +9,7 @@ import test
 import wrap_train
 import dill
 from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
+from deep_visual_geo_localization_benchmark.model.aggregation import GeM
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
 
@@ -40,10 +41,10 @@ def prune(args):
 
     else:
         model_dir = join(args.run_path, "..", args.backbone, "0.pth")
-        model = torch.load(model_dir)
+        model = torch.load(model_dir, pickle_module=dill)
         save(sparsity, args, model)
 
-    model = torch.load(model_dir)
+    model = torch.load(model_dir, pickle_module=dill)
 
     model.zero_grad()
     sparsity = args.sparsity
@@ -57,7 +58,7 @@ def prune(args):
 
     ignored_layers = []
     for m in model.modules():
-        if isinstance(m, NetVLAD):
+        if isinstance(m, NetVLAD) or isinstance(m, GeM):
             ignored_layers.append(m)
 
     logging.info("Starting prune")
@@ -100,11 +101,11 @@ def prune(args):
         base_macs, base_nparams = macs, nparams
 
         # obviously is dumb to save and reload but is simpler than doing anything else
-        save(sparsity, args, model)
+        # save(sparsity, args, model)
 
         # finetune (train) here
         if not args.no_finetune:
-            pruner.model = wrap_train.wrap_train(args, pruner=pruner)
+            pruner.model = wrap_train.wrap_train(args, pruner=pruner, model=model)
 
         # save the fine-tuned model
         save(sparsity, args, model)
