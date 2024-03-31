@@ -9,7 +9,8 @@ import test
 import wrap_train
 import dill
 from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
-from deep_visual_geo_localization_benchmark.model.aggregation import GeM
+from deep_visual_geo_localization_benchmark.model.aggregation import GeM#
+from deep_visual_geo_localization_benchmark.model import network
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
 
@@ -38,13 +39,22 @@ def prune(args):
 
     if not float(sparsity) == 0:
         model_dir = join(args.run_path, sparsity, model_name)
+        model = network.GeoLocalizationNet(args).eval()
+        state_dict = torch.load(model_dir, map_location=args.device, pickle_module=dill)
+        tp.load_state_dict(model, state_dict=state_dict)
+        model = model.module
 
     else:
         model_dir = join(args.run_path, "..", args.backbone, "0.pth")
-        model = torch.load(model_dir, pickle_module=dill)
+        model = network.GeoLocalizationNet(args).eval()
+        state_dict = torch.load(model_dir, map_location=args.device, pickle_module=dill)
+        tp.load_state_dict(model, state_dict=state_dict)
+        model = model.module
         save(sparsity, args, model)
 
-    model = torch.load(model_dir, pickle_module=dill)
+
+
+
 
     model.zero_grad()
     sparsity = args.sparsity
@@ -54,14 +64,16 @@ def prune(args):
 
     iterative_steps = round((args.max_sparsity - args.sparsity) / args.pruning_step)
 
-    example_inputs = torch.randn(1, 3, 224, 224)
+    example_inputs = torch.randn(1, 3, 224, 224).to('cuda')
 
     ignored_layers = []
     for m in model.modules():
+        print(m)
         if isinstance(m, NetVLAD) or isinstance(m, GeM):
             ignored_layers.append(m)
 
     logging.info("Starting prune")
+
 
     pruner = tp.MetaPruner(
         model=model,
@@ -143,6 +155,7 @@ def save(sparsity, args, model):
     if not os.path.isdir(join(args.run_path, str(sparsity))):
         os.mkdir(join(args.run_path, str(sparsity)))
     model_dir = join(args.run_path, str(sparsity), str(sparsity).split(".")[1] + ".pth")
-    torch.save(model, model_dir, pickle_module=dill)
+    state_dict = tp.state_dict(model)
+    torch.save(state_dict, model_dir, pickle_module=dill)
 
     args.resume = model_dir

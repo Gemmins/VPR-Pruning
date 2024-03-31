@@ -95,13 +95,11 @@ if __name__ == '__main__':
         state_dict = tp.state_dict(model)
 
         if 'p' in args.run_type or 'e' in args.run_type:
-            torch.save(state_dict, save_path)
-            #torch.save(state_dict, save_path, pickle_module=dill)
+            torch.save(state_dict, save_path, pickle_module=dill)
 
         # will save the base trained network in a folder named as the backbone
         if not exists:
-            torch.save(state_dict, join(args.run_path, "..", args.backbone, "0.pth"))
-            #torch.save(state_dict, join(args.run_path, "..", args.backbone, "0.pth"), pickle_module=dill)
+            torch.save(state_dict, join(args.run_path, "..", args.backbone, "0.pth"), pickle_module=dill)
 
     # prune network, produce list of networks at different all levels of sparsity
     if 'p' in args.run_type:

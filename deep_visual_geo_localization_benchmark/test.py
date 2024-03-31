@@ -128,6 +128,8 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
         return test_efficient_ram_usage(args, eval_ds, model, test_method)
     
     model = model.eval()
+    example_inputs = torch.randn(1, 3, 224, 224).to('cuda')
+    args.features_dim = model(example_inputs).shape[1]
     with torch.no_grad():
         logging.debug("Extracting database features for evaluation/testing")
         # For database use "hard_resize", although it usually has no effect because database images have same resolution
