@@ -7,12 +7,13 @@ import shutil
 import logging
 import torchscan
 import numpy as np
+import torch_pruning as tp
 from collections import OrderedDict
 from os.path import join
 from sklearn.decomposition import PCA
 
 from deep_visual_geo_localization_benchmark import datasets_ws
-
+from deep_visual_geo_localization_benchmark.model import network
 
 def get_flops(model, input_shape=(480, 640)):
     """Return the FLOPs as a string, such as '22.33 GFLOPs'"""
@@ -32,7 +33,11 @@ def save_checkpoint(args, state, is_best, filename):
 def resume_model(args, model):
     # TODO allow both with check
     #  but for now models aren't being loaded from state dicts
-    model = torch.load(args.resume, map_location=args.device, pickle_module=dill)
+    model = network.GeoLocalizationNet(args).eval()
+    state_dict = torch.load(args.resume, map_location=args.device)
+    tp.load_state_dict(model, state_dict=state_dict)
+
+    # model = torch.load(args.resume, map_location=args.device, pickle_module=dill)
     """
     if 'model_state_dict' in checkpoint:
         state_dict = checkpoint['model_state_dict']
@@ -54,7 +59,10 @@ def resume_train(args, model=None):
     logging.debug(f"Loading checkpoint: {args.resume}")
     start_epoch_num = 0
     if model is None:
-        model = torch.load(args.resume, pickle_module=dill)
+        model = network.GeoLocalizationNet(args).eval()
+        state_dict = torch.load(args.resume, map_location=args.device)
+        tp.load_state_dict(model, state_dict=state_dict)
+        # model = torch.load(args.resume, pickle_module=dill)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     best_r5 = 0
     not_improved_num = 0

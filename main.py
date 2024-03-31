@@ -9,7 +9,7 @@ import dill
 from os.path import join
 from datetime import datetime
 from deep_visual_geo_localization_benchmark import commons
-
+import torch_pruning as tp
 # 1. Train networks from scratch on a dataset
 # 2. Perform pruning and fine-tuning of a trained network
 # 3. Evaluate performance metrics of a network and generate relevant figures
@@ -92,12 +92,16 @@ if __name__ == '__main__':
 
         model = wrap_train.wrap_train(args)
 
+        state_dict = tp.state_dict(model)
+
         if 'p' in args.run_type or 'e' in args.run_type:
-            torch.save(model, save_path, pickle_module=dill)
+            torch.save(state_dict, save_path)
+            #torch.save(state_dict, save_path, pickle_module=dill)
 
         # will save the base trained network in a folder named as the backbone
         if not exists:
-            torch.save(model, join(args.run_path, "..", args.backbone, "0.pth"), pickle_module=dill)
+            torch.save(state_dict, join(args.run_path, "..", args.backbone, "0.pth"))
+            #torch.save(state_dict, join(args.run_path, "..", args.backbone, "0.pth"), pickle_module=dill)
 
     # prune network, produce list of networks at different all levels of sparsity
     if 'p' in args.run_type:
