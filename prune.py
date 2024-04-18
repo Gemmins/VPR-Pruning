@@ -8,6 +8,8 @@ from os.path import join
 import test
 import wrap_train
 import dill
+from deep_visual_geo_localization_benchmark.eval import eval
+from deep_visual_geo_localization_benchmark import datasets_ws
 from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
 from deep_visual_geo_localization_benchmark.model.aggregation import GeM
 # prune should take trained network + args and result in the
@@ -46,6 +48,10 @@ def prune(args):
 
     model = torch.load(model_dir, pickle_module=dill)
 
+    example_inputs = torch.randn(1, 3, 224, 224)
+
+    model(example_inputs)
+
     model.zero_grad()
     sparsity = args.sparsity
 
@@ -56,10 +62,20 @@ def prune(args):
 
     example_inputs = torch.randn(1, 3, 224, 224)
 
+    # this is just an odd way to stop the layer preceeding
+    j = 0
+    k = 0
+    l = 0
+
     ignored_layers = []
     for m in model.modules():
-        if isinstance(m, NetVLAD) or isinstance(m, GeM):
+        if isinstance(m, NetVLAD):
             ignored_layers.append(m)
+        elif isinstance(m, GeM):
+            ignored_layers.append(j)
+        j = l
+        l = k
+        k = m
 
     logging.info("Starting prune")
 
@@ -102,13 +118,17 @@ def prune(args):
 
         # obviously is dumb to save and reload but is simpler than doing anything else
         # save(sparsity, args, model)
+        recalls = eval(args, model)
+        #print(*recalls)
 
         # finetune (train) here
         if not args.no_finetune:
             pruner.model = wrap_train.wrap_train(args, pruner=pruner, model=model)
 
         # save the fine-tuned model
-        save(sparsity, args, model)
+        # recalls = eval(args, pruner.model)
+        # print(*recalls)
+        save(sparsity, args, pruner.model)
 
 
 def get_importance(pruning_method):
@@ -125,7 +145,7 @@ def get_importance(pruning_method):
         case "l2_norm":
             imp = tp.importance.MagnitudeImportance(p=2, normalizer="mean", group_reduction="mean")
         case "taylor":
-            imp = tp.importance.TaylorImportance
+            imp = tp.importance.GroupTaylorImportance(normalizer="mean", group_reduction="mean")
         case "hessian":
             imp = tp.importance.HessianImportance
         case "bnScale":
