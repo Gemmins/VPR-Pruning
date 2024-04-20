@@ -115,8 +115,8 @@ def train(args, pruner=None, cmodel=None):
 
     if args.backbone.startswith('vit'):
         logging.info(f"Output dimension of the model is {args.features_dim}")
-    else:
-        logging.info(f"Output dimension of the model is {args.features_dim}, with {util.get_flops(model, args.resize)}")
+    #else:
+    #    logging.info(f"Output dimension of the model is {args.features_dim}, with {util.get_flops(model, args.resize)}")
 
     if torch.cuda.device_count() >= 2:
         # When using more than 1GPU, use sync_batchnorm for torch.nn.DataParallel
