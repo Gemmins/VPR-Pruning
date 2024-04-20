@@ -40,6 +40,7 @@ def prune(args):
 
     if not float(sparsity) == 0:
         model_dir = join(args.run_path, sparsity, model_name)
+        args.resume = model_dir
 
     else:
         model_dir = join(args.run_path, "..", args.backbone, "0.pth")
