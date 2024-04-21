@@ -34,7 +34,7 @@ from deep_visual_geo_localization_benchmark import util
 from deep_visual_geo_localization_benchmark import commons
 from deep_visual_geo_localization_benchmark import datasets_ws
 from deep_visual_geo_localization_benchmark.model import network
-def eval(args):
+def eval(args, cmodel=None):
 
     OFF_THE_SHELF_RADENOVIC = {
         'resnet50conv5_sfm'    : 'http://cmp.felk.cvut.cz/cnnimageretrieval/data/networks/retrieval-SfM-120k/rSfM120k-tl-resnet50-gem-w-97bf910.pth',
@@ -86,6 +86,8 @@ def eval(args):
         model_keys = model.state_dict().keys()
         renamed_state_dict = {k: v for k, v in zip(model_keys, state_dict.values())}
         model.load_state_dict(renamed_state_dict)
+    elif cmodel is not None:
+        model = cmodel
     elif args.resume is not None:
         logging.info(f"Resuming model from {args.resume}")
         model = util.resume_model(args, model)

@@ -5,7 +5,7 @@ import dill
 import torch
 import shutil
 import logging
-import torchscan
+#import torchscan
 import numpy as np
 import torch_pruning as tp
 from collections import OrderedDict
@@ -15,13 +15,15 @@ from sklearn.decomposition import PCA
 from deep_visual_geo_localization_benchmark import datasets_ws
 from deep_visual_geo_localization_benchmark.model import network
 
+
+"""
 def get_flops(model, input_shape=(480, 640)):
-    """Return the FLOPs as a string, such as '22.33 GFLOPs'"""
+    Return the FLOPs as a string, such as '22.33 GFLOPs'
     assert len(input_shape) == 2, f"input_shape should have len==2, but it's {input_shape}"
     module_info = torchscan.crawl_module(model, (3, input_shape[0], input_shape[1]))
     output = torchscan.utils.format_info(module_info)
     return re.findall("Floating Point Operations on forward: (.*)\n", output)[0]
-
+"""
 
 def save_checkpoint(args, state, is_best, filename):
     model_path = join(args.save_dir, filename)
