@@ -180,6 +180,7 @@ class TripletsDataset(BaseDataset):
         self.hard_positives_per_query = list(knn.radius_neighbors(self.queries_utms,
                                              radius=args.train_positives_dist_threshold,  # 10 meters
                                              return_distance=False))
+        self.hard_positives_per_query = np.array(self.hard_positives_per_query, dtype=object)
         
         #### Some queries might have no positive, we should remove those queries.
         queries_without_any_hard_positive = np.where(np.array([len(p) for p in self.hard_positives_per_query], dtype=object) == 0)[0]
