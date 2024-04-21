@@ -11,7 +11,7 @@ import dill
 from deep_visual_geo_localization_benchmark.eval import eval
 from deep_visual_geo_localization_benchmark import datasets_ws
 from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
-from deep_visual_geo_localization_benchmark.model.aggregation import GeM#
+from deep_visual_geo_localization_benchmark.model.aggregation import GeM
 from deep_visual_geo_localization_benchmark.model import network
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
@@ -55,11 +55,7 @@ def prune(args):
         model = model.module
         save(sparsity, args, model)
 
-
-
-
-
-    example_inputs = torch.randn(1, 3, 224, 224)
+    example_inputs = torch.randn(1, 3, 224, 224).to('cuda')
 
     model(example_inputs)
 
@@ -80,7 +76,6 @@ def prune(args):
 
     ignored_layers = []
     for m in model.modules():
-        print(m)
         if isinstance(m, NetVLAD) or isinstance(m, GeM):
             ignored_layers.append(m)
         elif isinstance(m, GeM):
@@ -103,15 +98,15 @@ def prune(args):
     )
 
     base_macs, base_nparams = tp.utils.count_ops_and_params(model, example_inputs)
-    print(model(example_inputs).shape)
+    #print(model(example_inputs).shape)
 
     for i in range(iterative_steps-1):
         pruner.step()
 
         # would be good to log/save this info somewhere
         macs, nparams = tp.utils.count_ops_and_params(model, example_inputs)
-        print(model)
-        print(model(example_inputs).shape)
+        #print(model)
+        #print(model(example_inputs).shape)
         logging.info(
             "  Iter %d/%d, Params: %.2f M => %.2f M"
             % (i + 1, iterative_steps-1, base_nparams / 1e6, nparams / 1e6)
@@ -131,7 +126,7 @@ def prune(args):
 
         # obviously is dumb to save and reload but is simpler than doing anything else
         # save(sparsity, args, model)
-        recalls = eval(args, model)
+        #recalls = eval(args, model)
         #print(*recalls)
 
         # finetune (train) here
