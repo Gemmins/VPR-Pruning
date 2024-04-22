@@ -37,8 +37,7 @@ def parse_arguments():
 
     # pruning
     parser.add_argument("--pruning_method", type=str, default=None,
-                        help="Type of pruning to perform on the network", choices=["l1_norm", "l2_norm",
-                                                                                   "hessian", "taylor", "bnScale",
+                        help="Type of pruning to perform on the network", choices=["l1_norm", "l2_norm", "fpgm", "obdc",
                                                                                    "lamp", "random"])
     parser.add_argument("--max_sparsity", type=float, default=None,
                         help="The level of sparsity you want to go to")
