@@ -219,8 +219,6 @@ def train(args, pruner=None, cmodel=None):
         logging.info(f"Finished epoch {epoch_num:02d} in {str(datetime.now() - epoch_start_time)[:-7]}, "
                      f"average epoch triplet loss = {epoch_losses.mean():.4f}")
 
-        # TODO DO NOT FORGET TO REMOVE THIS!!!!!!!
-        return model
 
         # Compute recalls on validation set
         recalls, recalls_str = test.test(args, val_ds, model)
