@@ -112,6 +112,9 @@ if __name__ == '__main__':
                 os.mkdir(args.run_path)
             logs(args)
 
+        if args.backbone == "efficient":
+            args.resize = [320, 300]
+
         prune.prune(args)
 
     # evaluates all models within a directory
