@@ -18,7 +18,7 @@ def parse_arguments():
     # network
     parser.add_argument("--backbone", type=str, default=None,
                         help="Backend of the network", choices=["resnet", "vgg", "resnet18conv5", "resnet18conv4", "dense",
-                                                                "efficient", "mobile", "regnet", "shuffle", "resnet50conv5"])
+                                                                "efficient", "mobile", "regnet", "shuffle", "resnet50conv5", "resnet50conv4"])
     parser.add_argument("--aggregation", type=str, default=None,
                         help="Network aggregation layer", choices=["netvlad", "gem"])
 
@@ -37,8 +37,7 @@ def parse_arguments():
 
     # pruning
     parser.add_argument("--pruning_method", type=str, default=None,
-                        help="Type of pruning to perform on the network", choices=["l1_norm", "l2_norm",
-                                                                                   "hessian", "taylor", "bnScale",
+                        help="Type of pruning to perform on the network", choices=["l1_norm", "l2_norm", "fpgm", "obdc",
                                                                                    "lamp", "random"])
     parser.add_argument("--max_sparsity", type=float, default=None,
                         help="The level of sparsity you want to go to")
