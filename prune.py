@@ -84,8 +84,8 @@ def prune(args):
             else:
                 ignored_layers.append(j)
         i = j
-        j = K
-        K = l
+        j = k
+        k = l
         l = m
 
     logging.info("Starting prune")
