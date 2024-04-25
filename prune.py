@@ -44,7 +44,6 @@ def prune(args):
         model = network.GeoLocalizationNet(args).eval()
         state_dict = torch.load(model_dir, map_location=args.device, pickle_module=dill)
         tp.load_state_dict(model, state_dict=state_dict)
-        model = model.module
         args.resume = model_dir
 
     else:
