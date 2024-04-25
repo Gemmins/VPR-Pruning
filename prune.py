@@ -76,7 +76,7 @@ def prune(args):
 
     ignored_layers = []
     for m in model.modules():
-        if isinstance(m, NetVLAD) or isinstance(m, GeM):
+        if isinstance(m, NetVLAD):
             ignored_layers.append(m)
         elif isinstance(m, GeM):
             ignored_layers.append(j)
