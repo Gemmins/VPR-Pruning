@@ -69,6 +69,7 @@ def prune(args):
     example_inputs = torch.randn(1, 3, 224, 224).to('cuda')
 
     # this is just an odd way to stop the layer preceeding
+    i = 0
     j = 0
     k = 0
     l = 0
@@ -78,10 +79,14 @@ def prune(args):
         if isinstance(m, NetVLAD):
             ignored_layers.append(m)
         elif isinstance(m, GeM):
-            ignored_layers.append(j)
-        j = l
-        l = k
-        k = m
+            if args.backbone == "efficient":
+                ignored_layers.append(i)
+            else:
+                ignored_layers.append(j)
+        i = j
+        j = K
+        K = l
+        l = m
 
     logging.info("Starting prune")
 
