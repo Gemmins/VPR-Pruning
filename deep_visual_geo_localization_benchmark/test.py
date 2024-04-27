@@ -136,7 +136,7 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
         database_dataloader = DataLoader(dataset=database_subset_ds, num_workers=args.num_workers,
                                          batch_size=args.infer_batch_size, pin_memory=(args.device == "cuda"))
         if args.recall_curve:
-            args.recall_values = range(1, len(database_subset_ds)+1)
+            args.recall_values = range(1, 101)
         if test_method == "nearest_crop" or test_method == 'maj_voting':
             all_features = np.empty((5 * eval_ds.queries_num + eval_ds.database_num, args.features_dim), dtype="float32")
         else:
