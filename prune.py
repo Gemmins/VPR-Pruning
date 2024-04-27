@@ -12,6 +12,7 @@ from deep_visual_geo_localization_benchmark.eval import eval
 from deep_visual_geo_localization_benchmark import datasets_ws
 from deep_visual_geo_localization_benchmark.model.aggregation import NetVLAD
 from deep_visual_geo_localization_benchmark.model.aggregation import GeM
+
 # prune should take trained network + args and result in the
 # creation of a number of pruned networks each in their own folder
 
@@ -96,7 +97,6 @@ def prune(args):
     for i in range(iterative_steps-1):
         pruner.step()
 
-        # would be good to log/save this info somewhere
         macs, nparams = tp.utils.count_ops_and_params(model, example_inputs)
         print(model)
         print(model(example_inputs).shape)
@@ -117,8 +117,6 @@ def prune(args):
 
         base_macs, base_nparams = macs, nparams
 
-        # obviously is dumb to save and reload but is simpler than doing anything else
-        # save(sparsity, args, model)
         recalls = eval(args, model)
         #print(*recalls)
 
@@ -127,8 +125,6 @@ def prune(args):
             pruner.model = wrap_train.wrap_train(args, pruner=pruner, model=model)
 
         # save the fine-tuned model
-        # recalls = eval(args, pruner.model)
-        # print(*recalls)
         save(sparsity, args, pruner.model)
 
 

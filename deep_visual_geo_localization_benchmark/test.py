@@ -135,7 +135,8 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
         database_subset_ds = Subset(eval_ds, list(range(eval_ds.database_num)))
         database_dataloader = DataLoader(dataset=database_subset_ds, num_workers=args.num_workers,
                                          batch_size=args.infer_batch_size, pin_memory=(args.device == "cuda"))
-        
+        if args.recall_curve:
+            args.recall_values = range(1, len(database_subset_ds)+1)
         if test_method == "nearest_crop" or test_method == 'maj_voting':
             all_features = np.empty((5 * eval_ds.queries_num + eval_ds.database_num, args.features_dim), dtype="float32")
         else:
@@ -178,13 +179,6 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
     faiss_index = faiss.IndexFlatL2(args.features_dim)
     faiss_index.add(database_features)
 
-    """
-    if args.precompute():
-        del all_features
-    else:
-        del all_features, database_features
-    """
-
     logging.debug("Calculating recalls")
     distances, predictions = faiss_index.search(queries_features, max(args.recall_values))
     
@@ -225,10 +219,6 @@ def test(args, eval_ds, model, test_method="hard_resize", pca=None):
             # relative to crops is eliminated
             predictions[q, 0, :20] = preds[np.sort(unique_idx)][:20]
         predictions = predictions[:, 0, :20]  # keep only the closer 20 predictions for each query
-    """
-    if args.precompute():
-        precomputed_data = (queries_features, database_features, distances, )
-    """
 
     #### For each query, check if the predictions are correct
     positives_per_query = eval_ds.get_positives()
