@@ -88,6 +88,7 @@ def evaluate(args, vargs):
         plt.plot(sparsity, data[d], label=d)
         plt.legend()
         plt.xlabel("Sparsity")
+        plt.xticks(sparsity)
         plt.ylabel(d)
         plt.title(f"{args.backbone}-{args.aggregation}-{args.pruning_method}")
         plt.savefig(join(eval_dir, d + ".pdf"))
