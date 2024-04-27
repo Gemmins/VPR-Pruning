@@ -54,8 +54,7 @@ def evaluate(args, vargs):
 
                         with torch.no_grad():
 
-                            #performance.append(gl.eval(args))
-                            performance.append(np.random.randn(10))
+                            performance.append(gl.eval(args))
 
                             example_inputs = torch.randn(48, 3, 224, 224, dtype=torch.float).to(device)
 
