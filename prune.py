@@ -117,7 +117,7 @@ def prune(args):
 
         base_macs, base_nparams = macs, nparams
 
-        recalls = eval(args, model)
+        #recalls = eval(args, model)
         #print(*recalls)
 
         # finetune (train) here
