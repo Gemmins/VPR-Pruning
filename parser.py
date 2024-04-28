@@ -48,16 +48,14 @@ def parse_arguments():
     parser.add_argument("--no_finetune", type=bool, default=False,
                         help="Fine-tune after each pruning step or not")
 
-
-    parser.add_argument("--precompute", type=bool, default=False,
-                        help="Flag to output computed descriptors and matching of model")
+    parser.add_argument("--recall_curve", type=bool, default=False,
+                        help="If eval should generate a recall-k curve")
 
     # Paths parameters
-    # TODO change to train_name later
     parser.add_argument("--dataset_name", type=str, default="pitts30k", help="Relative path of the dataset")
     parser.add_argument("--pca_dataset_folder", type=str, default=None,
                         help="Path with images to be used to compute PCA (ie: pitts30k/images/train")
-    # TODO change this later
+
     parser.add_argument("--save_dir", type=str, default="default",
                         help="Folder name of the current run (saved in ./logs/)")
 
@@ -138,8 +136,6 @@ def parse_arguments():
     parser.add_argument("--random_rotation", type=float, default=0, help="_")
 
     args = parser.parse_args()
-
-    # TODO lots of these checks are unnecessary so eventually remove them
 
     if args.datasets_folder is None:
         try:

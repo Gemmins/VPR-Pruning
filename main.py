@@ -70,7 +70,8 @@ if __name__ == '__main__':
         start_time = datetime.now()
         folderName = (f"{start_time.strftime('%Y-%m-%d_%H-%M-%S')}-{args.backbone}"
                       f"-{args.pruning_method}-{args.aggregation}")
-
+        if args.no_finetune:
+            folderName += "-no_finetune"
         exists = True
         if not os.path.exists(join(args.run_path, args.backbone)):
             exists = False
@@ -108,6 +109,8 @@ if __name__ == '__main__':
                 start_time = datetime.now()
                 folderName = (f"{start_time.strftime('%Y-%m-%d_%H-%M-%S')}-{args.backbone}"
                               f"-{args.pruning_method}-{args.aggregation}")
+                if args.no_finetune:
+                    folderName += "-no_finetune"
                 args.run_path = join(args.run_path, folderName)
                 os.mkdir(args.run_path)
             logs(args)
