@@ -56,7 +56,7 @@ def evaluate(args, vargs):
 
                             performance.append(gl.eval(args))
 
-                            example_inputs = torch.randn(48, 3, 224, 224, dtype=torch.float).to(device)
+                            example_inputs = torch.randn(256, 3, 224, 224, dtype=torch.float).to(device)
 
                             data["timings"].append(tp.utils.benchmark.measure_latency(model, example_inputs)[0])
                             data["memory"].append(tp.utils.benchmark.measure_memory(model, example_inputs, device))
