@@ -31,7 +31,7 @@ def evaluate(args):
 
     sparsity = np.zeros(size)
 
-    dimensions = np.zeros(size)
+    dimensions = []
     columns = np.zeros(size)
 
     # lots of nesting!
@@ -51,6 +51,7 @@ def evaluate(args):
                         sparsity[index] = (float("0." + name[0]))
                         args.resume = join(args.run_path, f, g)
                         args.save_dir = join(args.run_path, f)
+
 
                         model = gl.util.resume_model(args, 1)
                         device = torch.device("cuda")
@@ -72,6 +73,9 @@ def evaluate(args):
                             data["macs"][index] = (sum(layer["macs"] for layer in module_info["layers"]))
                             data["dmas"][index] = (sum(layer["dmas"] for layer in module_info["layers"]))
 
+
+                        if len(dimensions) == 0:
+                            dimensions = np.zeros([size, len(get_dimensions(args))])
                         dimensions[index] = (get_dimensions(args))
                         columns[index] = (float("0." + name[0]))
 
