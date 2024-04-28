@@ -19,7 +19,7 @@ def evaluate(args):
 
     size = round(args.max_sparsity/args.pruning_step)
 
-    performance = np.zeros(size)
+    performance = np.zeros([size, 100])
 
     data = {"timings": np.zeros(size),
             "memory": np.zeros(size),
