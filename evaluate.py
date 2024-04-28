@@ -14,10 +14,10 @@ import torch
 from io import BytesIO
 import dataframe_image as dfi
 import torch_pruning as tp
-def evaluate(args, vargs):
+def evaluate(args):
 
 
-    size = round(args.max_sparsity/args.sparsity_step)
+    size = round(args.max_sparsity/args.pruning_step)
 
     performance = np.zeros(size)
 
