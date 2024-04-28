@@ -48,7 +48,7 @@ def evaluate(args):
 
                     if name[1] == "pth":
 
-                        sparsity.append(float("0." + name[0]))
+                        sparsity[index] = (float("0." + name[0]))
                         args.resume = join(args.run_path, f, g)
                         args.save_dir = join(args.run_path, f)
 
