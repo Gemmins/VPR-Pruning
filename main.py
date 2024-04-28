@@ -124,6 +124,4 @@ if __name__ == '__main__':
     if 'e' in args.run_type:
         if 't' not in args.run_type and 'p' not in args.run_type:
             logs(args)
-        # TODO get rid of this
-        vargs = vars(parser.parse_arguments())
-        evaluate.evaluate(args, vargs)
+        evaluate.evaluate(args)

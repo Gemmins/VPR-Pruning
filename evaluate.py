@@ -14,21 +14,25 @@ import torch
 from io import BytesIO
 import dataframe_image as dfi
 import torch_pruning as tp
-def evaluate(args, vargs):
-    performance = []
+def evaluate(args):
 
-    data = {"timings": [],
-            "memory": [],
-            "params": [],
-            "macs": [],
-            "dmas": [],
-            "dimensions": [],
-            "recall": []}
 
-    sparsity = []
+    size = round(args.max_sparsity/args.pruning_step)
+
+    performance = np.zeros([size, 100])
+
+    data = {"timings": np.zeros(size),
+            "memory": np.zeros(size),
+            "params": np.zeros(size),
+            "macs": np.zeros(size),
+            "dmas": np.zeros(size),
+            "dimensions": np.zeros(size),
+            "recall": np.zeros(size)}
+
+    sparsity = np.zeros(size)
 
     dimensions = []
-    columns = []
+    columns = np.zeros(size)
 
     # lots of nesting!
     # is really just cuz each model will be in their own folder
@@ -40,12 +44,14 @@ def evaluate(args, vargs):
                 if os.path.isfile(join(dirpath, g)):
 
                     name = g.split(".")
+                    index = int(name[0])
 
                     if name[1] == "pth":
 
-                        sparsity.append(float("0." + name[0]))
+                        sparsity[index] = (float("0." + name[0]))
                         args.resume = join(args.run_path, f, g)
                         args.save_dir = join(args.run_path, f)
+
 
                         model = gl.util.resume_model(args, 1)
                         device = torch.device("cuda")
@@ -54,21 +60,24 @@ def evaluate(args, vargs):
 
                         with torch.no_grad():
 
-                            performance.append(gl.eval(args))
+                            performance[index] = gl.eval(args)
 
-                            example_inputs = torch.randn(48, 3, 224, 224, dtype=torch.float).to(device)
+                            example_inputs = torch.randn(512, 3, 224, 224, dtype=torch.float).to(device)
 
-                            data["timings"].append(tp.utils.benchmark.measure_latency(model, example_inputs)[0])
-                            data["memory"].append(tp.utils.benchmark.measure_memory(model, example_inputs, device))
+                            data["timings"][index] = (tp.utils.benchmark.measure_latency(model, example_inputs)[0])
+                            data["memory"][index] = (tp.utils.benchmark.measure_memory(model, example_inputs, device))
 
                             module_info = torchscan.crawl_module(model, (3, 224, 224))
 
-                            data["params"].append(module_info["overall"]["grad_params"] + module_info["overall"]["nograd_params"])
-                            data["macs"].append(sum(layer["macs"] for layer in module_info["layers"]))
-                            data["dmas"].append(sum(layer["dmas"] for layer in module_info["layers"]))
+                            data["params"][index] = (module_info["overall"]["grad_params"] + module_info["overall"]["nograd_params"])
+                            data["macs"][index] = (sum(layer["macs"] for layer in module_info["layers"]))
+                            data["dmas"][index] = (sum(layer["dmas"] for layer in module_info["layers"]))
 
-                        dimensions.append(get_dimensions(args))
-                        columns.append(float("0." + name[0]))
+
+                        if len(dimensions) == 0:
+                            dimensions = np.zeros([size, len(get_dimensions(args))])
+                        dimensions[index] = (get_dimensions(args))
+                        columns[index] = (float("0." + name[0]))
 
     performance = np.array(performance).T
     data["recall"] = performance[0]
