@@ -84,6 +84,8 @@ def evaluate(args, vargs):
         a = [data[d], percentages]
         np.savetxt(join(eval_dir, d + ".csv"), a, delimiter=",")
 
+        sparsity.sort()
+
         plt.figure()
         plt.plot(sparsity, data[d], label=d)
         plt.legend()
