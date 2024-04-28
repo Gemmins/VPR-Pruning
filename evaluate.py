@@ -15,20 +15,24 @@ from io import BytesIO
 import dataframe_image as dfi
 import torch_pruning as tp
 def evaluate(args, vargs):
-    performance = []
 
-    data = {"timings": [],
-            "memory": [],
-            "params": [],
-            "macs": [],
-            "dmas": [],
-            "dimensions": [],
-            "recall": []}
 
-    sparsity = []
+    size = round(args.max_sparsity/args.sparsity_step)
 
-    dimensions = []
-    columns = []
+    performance = np.zeros(size)
+
+    data = {"timings": np.zeros(size),
+            "memory": np.zeros(size),
+            "params": np.zeros(size),
+            "macs": np.zeros(size),
+            "dmas": np.zeros(size),
+            "dimensions": np.zeros(size),
+            "recall": np.zeros(size)}
+
+    sparsity = np.zeros(size)
+
+    dimensions = np.zeros(size)
+    columns = np.zeros(size)
 
     # lots of nesting!
     # is really just cuz each model will be in their own folder
@@ -40,6 +44,7 @@ def evaluate(args, vargs):
                 if os.path.isfile(join(dirpath, g)):
 
                     name = g.split(".")
+                    index = int(name[0])
 
                     if name[1] == "pth":
 
@@ -54,21 +59,21 @@ def evaluate(args, vargs):
 
                         with torch.no_grad():
 
-                            performance.append(gl.eval(args))
+                            performance[index] = gl.eval(args)
 
                             example_inputs = torch.randn(128, 3, 224, 224, dtype=torch.float).to(device)
 
-                            data["timings"].append(tp.utils.benchmark.measure_latency(model, example_inputs)[0])
-                            data["memory"].append(tp.utils.benchmark.measure_memory(model, example_inputs, device))
+                            data["timings"][index] = (tp.utils.benchmark.measure_latency(model, example_inputs)[0])
+                            data["memory"][index] = (tp.utils.benchmark.measure_memory(model, example_inputs, device))
 
                             module_info = torchscan.crawl_module(model, (3, 224, 224))
 
-                            data["params"].append(module_info["overall"]["grad_params"] + module_info["overall"]["nograd_params"])
-                            data["macs"].append(sum(layer["macs"] for layer in module_info["layers"]))
-                            data["dmas"].append(sum(layer["dmas"] for layer in module_info["layers"]))
+                            data["params"][index] = (module_info["overall"]["grad_params"] + module_info["overall"]["nograd_params"])
+                            data["macs"][index] = (sum(layer["macs"] for layer in module_info["layers"]))
+                            data["dmas"][index] = (sum(layer["dmas"] for layer in module_info["layers"]))
 
-                        dimensions.append(get_dimensions(args))
-                        columns.append(float("0." + name[0]))
+                        dimensions[index] = (get_dimensions(args))
+                        columns[index] = (float("0." + name[0]))
 
     performance = np.array(performance).T
     data["recall"] = performance[0]
@@ -83,8 +88,6 @@ def evaluate(args, vargs):
         percentages = [round((x / data[d][0]) * 100, 2) for x in data[d]]
         a = [data[d], percentages]
         np.savetxt(join(eval_dir, d + ".csv"), a, delimiter=",")
-
-        sparsity.sort()
 
         plt.figure()
         plt.plot(sparsity, data[d], label=d)
