@@ -45,9 +45,10 @@ def evaluate(args):
                 if os.path.isfile(join(dirpath, g)):
 
                     name = g.split(".")
-                    index = int(name[0])
+
 
                     if name[1] == "pth":
+                        index = int(name[0])
 
                         sparsity[index] = (float("0." + name[0]))
                         args.resume = join(args.run_path, f, g)
