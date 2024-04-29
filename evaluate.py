@@ -14,6 +14,7 @@ import torch
 from io import BytesIO
 import dataframe_image as dfi
 import torch_pruning as tp
+import format
 def evaluate(args):
 
 
@@ -44,9 +45,10 @@ def evaluate(args):
                 if os.path.isfile(join(dirpath, g)):
 
                     name = g.split(".")
-                    index = int(name[0])
+
 
                     if name[1] == "pth":
+                        index = int(name[0])
 
                         sparsity[index] = (float("0." + name[0]))
                         args.resume = join(args.run_path, f, g)
@@ -119,6 +121,9 @@ def evaluate(args):
     img = buf.getvalue()
     with open(join(eval_dir, 'dimensions.png'), 'wb') as file:
         file.write(img)
+
+
+    format.csv(eval_dir, f"{args.backbone}-{args.pruning_method}-{args.aggregation}")
 
 def get_dimensions(args):
     layers = []
