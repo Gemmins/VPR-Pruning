@@ -31,10 +31,10 @@ def evaluate(args):
             "recall": np.zeros(size)}
 
     sparsity = np.zeros(size)
-
+    eval_dir = join(args.run_path, "eval")
     dimensions = []
     columns = np.zeros(size)
-
+    """
     # lots of nesting!
     # is really just cuz each model will be in their own folder
     for f in os.listdir(args.run_path):
@@ -120,6 +120,7 @@ def evaluate(args):
     img = buf.getvalue()
     with open(join(eval_dir, 'dimensions.png'), 'wb') as file:
         file.write(img)
+    """
 
     format.csv(eval_dir, f"{args.backbone}-{args.pruning_method}-{args.aggregation}")
 
