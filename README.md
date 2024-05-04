@@ -5,7 +5,7 @@ Accompanying code for Part III project: "Structured Pruning of Convolutional Neu
 
 ## Installation
 
-Note: This environment will only work on linux devices at the moment, due to some of the packages not being available for other operating systems. e.g faiss-gpu
+Note: This environment will only work on linux systems at the moment, due to some of the packages not being available for other operating systems. e.g faiss-gpu
 
 ```bash
 conda env create -f environment.yml
