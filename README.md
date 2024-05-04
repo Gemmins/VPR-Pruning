@@ -1,7 +1,7 @@
 # VPR-Pruning
 
 Accompanying code for Part III project: "Structured Pruning of Convolutional Neural Networks in the Context of Visual Place Recognition"
-
+Also note that some of the comments in the code about the high level function are now outdated. Might change these one day.
 
 ## Installation
 
@@ -18,7 +18,10 @@ pip install -e torch-scan/.
 ```
 
 ## Usage
-```python main.py <insert arguments here>
+```python
+
+main.py <insert arguments here>
+
 ```
 
 
