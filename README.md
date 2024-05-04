@@ -1,6 +1,7 @@
 # VPR-Pruning
 
-Accompanying code for Part III project: "Structured Pruning of Convolutional Neural Networks in the Context of Visual Place Recognition"
+Accompanying code for Part III project: "Structured Pruning of Convolutional Neural Networks in the Context of Visual Place Recognition".
+The current main branch doesn't work saving/loading some networks. To remedy this use the state_dict-saving branch.
 Also note that some of the comments in the code about the high level function are now outdated. Might change these one day.
 
 ## Installation
