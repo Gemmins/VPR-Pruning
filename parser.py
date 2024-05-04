@@ -188,23 +188,4 @@ def parse_arguments():
             raise ValueError(
                 f"ViT can't work with aggregation {args.aggregation}. Please use one among [netvlad, gem, cls]")
 
-    ###################################################################################
-    # all args below here are explicitly for VPR-bench
-
-    parser.add_argument('-em', '--evalmode', required=True,
-                        help='Specify Evaluation Mode (Possible value can be either of 0/1/2/3)', type=int)
-    parser.add_argument('-sm', '--savematchinginfo', required=False, default=1,
-                        help='Flag for storing matching data after computation (Possible value can be 0/1)', type=int)
-    parser.add_argument('-dn', '--datasetname', default='Corridor', required=False,
-                        help='Name of Dataset Used for Evaluation Mode 0. This is used for creating titles of plots.',
-                        type=str)
-    parser.add_argument('-ddir', '--datasetdirectory', default='datasets/corridor/', required=False,
-                        help='Path to Dataset Directory Used for Evaluation Mode 0', type=str)
-    parser.add_argument('-mdir', '--precomputedmatchesdirectory', default='precomputed_matches/corridor/',
-                        required=False,
-                        help='Optional Path to Precomputed Matches Directory Used for Evaluation Mode 0', type=str)
-    parser.add_argument('-techs', '--VPRtechniquenames', nargs='+',
-                        help='List of names of VPR techniques which could be any of these (NetVLAD,RegionVLAD,CoHOG,HOG,AlexNet_VPR,AMOSNet,HybridNet,CALC)',
-                        required=True, type=str)
-
     return args
